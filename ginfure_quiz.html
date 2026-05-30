@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>銀フレ 単語テスト</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+:root {
+  --rose: #c0718a;
+  --rose-light: #faedf1;
+  --lavender: #8a7ab8;
+  --lavender-light: #eeebf8;
+  --sage: #6aa88c;
+  --sage-light: #e8f4ee;
+  --amber: #b88a50;
+  --amber-light: #fdf3e3;
+  --bg: #f9f6fc;
+  --surface: #ffffff;
+  --border: #ede8f2;
+  --text: #28253a;
+  --muted: #a09aac;
+  --correct: #5a9e7a;
+  --wrong: #c06060;
+  --card-shadow: 0 2px 20px rgba(90,70,130,0.08);
+  --card-shadow-md: 0 4px 36px rgba(90,70,130,0.11);
+}
+
+body {
+  font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  overflow-x: hidden;
+  color: var(--text);
+}
+
+.app {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ===== SCREENS ===== */
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px 40px;
+  min-height: 100vh;
+}
+.screen.active { display: flex; }
+
+/* ===== HOME ===== */
+.home-hero {
+  text-align: center;
+  padding: 52px 0 28px;
+  color: var(--text);
+}
+.home-hero h1 {
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: -2px;
+  background: linear-gradient(135deg, var(--rose), var(--lavender));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.home-hero .subtitle {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 8px;
+  letter-spacing: 0.5px;
+}
+
+.home-card {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 26px 22px;
+  width: 100%;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 24px;
+  padding-bottom: 22px;
+  border-bottom: 1.5px solid var(--border);
+}
+.stat { text-align: center; }
+.stat-num { font-size: 1.9rem; font-weight: 900; color: var(--rose); }
+.stat-label { font-size: 0.63rem; color: var(--muted); margin-top: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.mode-btn {
+  width: 100%;
+  padding: 15px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  font-size: 0.93rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 6px rgba(90,70,130,0.05);
+}
+.mode-btn:active { transform: scale(0.97); }
+.mode-btn.quiz-btn  { border-color: #e8cdd6; background: #fffafe; }
+.mode-btn.flash-btn { border-color: #d8d0ee; background: #faf8ff; }
+.mode-btn .btn-icon {
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.mode-btn.quiz-btn  .btn-icon { background: var(--rose-light); }
+.mode-btn.flash-btn .btn-icon { background: var(--lavender-light); }
+.mode-btn .btn-text { text-align: left; }
+.mode-btn .btn-title { font-size: 0.93rem; font-weight: 800; display: block; color: var(--text); }
+.mode-btn .btn-desc  { font-size: 0.71rem; color: var(--muted); display: block; margin-top: 2px; }
+
+.word-count-select {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 14px;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 4px;
+}
+.count-opt {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: transparent;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.count-opt.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 8px rgba(90,70,130,0.08);
+}
+
+/* ===== QUIZ ===== */
+.quiz-topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0 12px;
+}
+.back-btn {
+  width: 36px; height: 36px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.1s;
+  box-shadow: 0 1px 4px rgba(90,70,130,0.06);
+}
+.back-btn svg { fill: var(--muted); }
+.back-btn:active { background: var(--bg); }
+.prog-wrap { flex: 1; background: var(--border); border-radius: 99px; height: 6px; overflow: hidden; }
+.prog-bar { height: 100%; background: linear-gradient(90deg, var(--rose), var(--lavender)); border-radius: 99px; transition: width 0.4s cubic-bezier(.4,0,.2,1); }
+.score-chip {
+  background: var(--rose-light);
+  color: var(--rose);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 99px;
+  white-space: nowrap;
+  border: 1px solid #e8c8d4;
+}
+
+.word-card {
+  background: var(--surface);
+  border-radius: 22px;
+  padding: 30px 22px 26px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--card-shadow-md);
+  margin-bottom: 14px;
+  position: relative;
+  border: 1px solid var(--border);
+}
+.word-tag {
+  display: inline-block;
+  background: var(--lavender-light);
+  color: var(--lavender);
+  font-size: 0.66rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+.word-english {
+  font-size: 2.3rem;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -1px;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.word-phonetic {
+  font-size: 0.8rem;
+  color: #ccc;
+  margin-bottom: 18px;
+  font-family: serif;
+  letter-spacing: 0.2px;
+}
+.speak-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: var(--amber-light);
+  color: var(--amber);
+  font-size: 0.78rem;
+  font-weight: 800;
+  border: 1.5px solid #edd8b0;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.speak-btn:active { transform: scale(0.94); background: #f5e6c4; }
+.speak-icon { width: 13px; height: 13px; fill: var(--amber); }
+
+.choices {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.choice-btn {
+  padding: 15px 17px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 600;
+  border: 1.5px solid var(--border);
+  border-radius: 13px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s;
+  box-shadow: 0 1px 4px rgba(90,70,130,0.04);
+  line-height: 1.35;
+}
+.choice-btn:active:not([disabled]) { transform: scale(0.98); border-color: var(--lavender); background: var(--lavender-light); }
+.choice-btn.correct { border-color: var(--correct); background: var(--sage-light); color: #1a5438; }
+.choice-btn.wrong   { border-color: var(--wrong);   background: #fdf0f0; color: #7a2020; }
+.choice-btn[disabled] { cursor: default; }
+
+.feedback-card {
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 18px 20px;
+  width: 100%;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+  margin-bottom: 12px;
+  display: none;
+  animation: popIn 0.22s cubic-bezier(.34,1.56,.64,1);
+}
+.feedback-card.visible { display: block; }
+@keyframes popIn {
+  from { transform: scale(0.92) translateY(10px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+.feedback-label {
+  font-size: 0.93rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.feedback-label.ok  { color: var(--correct); }
+.feedback-label.ng  { color: var(--wrong); }
+.mnemonic-tag {
+  display: inline-block;
+  background: var(--amber-light);
+  color: var(--amber);
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  border: 1px solid #edd8b0;
+}
+.mnemonic-body { font-size: 0.86rem; color: #5a5060; line-height: 1.6; }
+
+.next-btn {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--rose), var(--lavender));
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 0 5px 18px rgba(130,90,170,0.22);
+  transition: all 0.1s;
+  display: none;
+  margin-bottom: 24px;
+  letter-spacing: 0.3px;
+}
+.next-btn:active { transform: scale(0.97); }
+
+/* ===== FLASHCARD ===== */
+.flash-topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0 12px;
+}
+.flash-counter {
+  flex: 1;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.flashcard {
+  background: var(--surface);
+  border-radius: 22px;
+  width: 100%;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 34px 26px;
+  box-shadow: var(--card-shadow-md);
+  cursor: pointer;
+  transition: transform 0.15s;
+  text-align: center;
+  margin-bottom: 12px;
+  position: relative;
+  user-select: none;
+  border: 1px solid var(--border);
+}
+.flashcard:active { transform: scale(0.98); }
+.flash-tap-hint { font-size: 0.68rem; color: #d0cad8; font-weight: 600; margin-bottom: 12px; letter-spacing: 0.3px; }
+.flash-word { font-size: 2.1rem; font-weight: 900; color: var(--text); letter-spacing: -1px; }
+.flash-phonetic { font-size: 0.78rem; color: #ccc; margin-top: 6px; font-family: serif; }
+.flash-meaning { font-size: 1.2rem; font-weight: 800; color: var(--lavender); margin-top: 6px; }
+
+.mnemonic-strip {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 15px 18px;
+  width: 100%;
+  margin-bottom: 12px;
+  border: 1.5px solid var(--amber-light);
+}
+.mnemonic-strip .mnemonic-tag-white {
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--amber);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.mnemonic-strip .mnemonic-text-white { font-size: 0.85rem; color: #5a5060; line-height: 1.55; }
+
+.flash-nav {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 32px;
+}
+.nav-btn {
+  flex: 1;
+  padding: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 700;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: all 0.1s;
+  box-shadow: 0 1px 4px rgba(90,70,130,0.05);
+}
+.nav-btn:active { background: var(--bg); transform: scale(0.97); }
+.nav-btn.center { flex: 0.8; border-color: var(--amber-light); color: var(--amber); background: var(--amber-light); }
+
+/* ===== RESULT ===== */
+.result-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+.result-card {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 40px 24px 32px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--card-shadow-md);
+  border: 1px solid var(--border);
+}
+.result-title { font-size: 0.68rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px; }
+.result-score {
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--rose), var(--lavender));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+.result-denom { font-size: 0.92rem; color: var(--muted); margin-bottom: 10px; }
+.result-pct {
+  display: inline-block;
+  padding: 5px 18px;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+.result-pct.s { background: var(--sage-light); color: #1a5438; }
+.result-pct.a { background: var(--lavender-light); color: #3d2e8a; }
+.result-pct.b { background: var(--amber-light); color: #7a5010; }
+.result-pct.c { background: #fdf0f0; color: #7a2020; }
+.result-msg { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 28px; }
+.result-actions { display: flex; flex-direction: column; gap: 10px; }
+.btn-retry {
+  padding: 16px;
+  background: linear-gradient(135deg, var(--rose), var(--lavender));
+  color: white;
+  font-size: 0.93rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 5px 18px rgba(130,90,170,0.22);
+  transition: transform 0.1s;
+}
+.btn-retry:active { transform: scale(0.97); }
+.btn-home {
+  padding: 15px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+.btn-home:active { background: var(--bg); }
+
+/* Learned button */
+.learned-btn {
+  width: 100%;
+  padding: 14px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 800;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(90,70,130,0.04);
+}
+.learned-btn.checked { border-color: var(--sage); background: var(--sage-light); color: #1a5438; }
+.learned-btn:active { transform: scale(0.97); }
+
+/* Filter toggle */
+.filter-toggle {
+  display: flex;
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 3px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.filter-opt {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: transparent;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.filter-opt.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 6px rgba(90,70,130,0.08); }
+
+/* Learned badge on card */
+.learned-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: var(--sage-light);
+  color: var(--sage);
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 99px;
+  display: none;
+  border: 1px solid #b8dac8;
+}
+.learned-badge.show { display: inline-block; }
+
+/* Confetti */
+.confetti-wrap {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none; overflow: hidden; z-index: 100;
+}
+.confetti-piece {
+  position: absolute;
+  width: 10px; height: 10px;
+  border-radius: 2px;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<div class="screen active" id="homeScreen">
+  <div class="home-hero">
+    <h1>銀フレ</h1>
+    <div class="subtitle">TOEIC Silver Phrases — 英単語マスター</div>
+  </div>
+
+  <div class="home-card">
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num" id="statWords">—</div>
+        <div class="stat-label">収録単語</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="statLearned" style="color:var(--sage);">0</div>
+        <div class="stat-label">覚えた</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="statBest">—</div>
+        <div class="stat-label">最高正答率</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <div style="font-size:0.72rem;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">出題数</div>
+      <div class="word-count-select">
+        <button class="count-opt" data-n="10" onclick="setCount(10,this)">10問</button>
+        <button class="count-opt active" data-n="20" onclick="setCount(20,this)">20問</button>
+        <button class="count-opt" data-n="9999" onclick="setCount(9999,this)">全問</button>
+      </div>
+    </div>
+
+    <button class="mode-btn quiz-btn" onclick="startQuiz(false)">
+      <div class="btn-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M11.5 2C6.81 2 3 5.81 3 10.5S6.81 19 11.5 19h.5v3c4.86-2.34 8-7 8-11.5C20 5.81 16.19 2 11.5 2zm1 14.5h-2v-2h2v2zm0-4h-2c0-3.25 3-3 3-5 0-1.1-.9-2-2-2s-2 .9-2 2h-2c0-2.21 1.79-4 4-4s4 1.79 4 4c0 2.5-3 2.75-3 5z"/></svg>
+      </div>
+      <div class="btn-text">
+        <span class="btn-title">クイズ — 全単語</span>
+        <span class="btn-desc">英語→日本語 4択テスト + 発音</span>
+      </div>
+    </button>
+
+    <button class="mode-btn" style="border-color:#b8dac8;background:#f0faf5;" onclick="startQuiz(true)">
+      <div class="btn-icon" style="background:var(--sage-light);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6aa88c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="btn-text">
+        <span class="btn-title">クイズ — 未習得のみ</span>
+        <span class="btn-desc">覚えた済み以外の単語でテスト</span>
+      </div>
+    </button>
+
+    <button class="mode-btn flash-btn" onclick="startFlash(false)">
+      <div class="btn-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8a7ab8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="btn-text">
+        <span class="btn-title">単語帳 — 全単語</span>
+        <span class="btn-desc">語呂合わせ付きフラッシュカード</span>
+      </div>
+    </button>
+
+    <button class="mode-btn" style="border-color:#edd8b0;background:#fdf8f0;" onclick="startFlash(true)">
+      <div class="btn-icon" style="background:var(--amber-light);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b88a50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="btn-text">
+        <span class="btn-title">単語帳 — 未習得のみ</span>
+        <span class="btn-desc">覚えた済み以外の単語を表示</span>
+      </div>
+    </button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="quizScreen">
+  <div class="quiz-topbar">
+    <button class="back-btn" onclick="goHome()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+    <div class="score-chip" id="scoreChip">0 / 0</div>
+  </div>
+
+  <div class="word-card">
+    <div class="word-tag" id="qTag">Q 1 / 20</div>
+    <div class="word-english" id="qWord">match</div>
+    <div class="word-phonetic" id="qPhonetic">/mætʃ/</div>
+    <button class="speak-btn" onclick="speakCurrent()">
+      <svg class="speak-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+      発音を聞く
+    </button>
+  </div>
+
+  <div class="choices" id="choices"></div>
+
+  <div class="feedback-card" id="feedCard">
+    <div class="feedback-label" id="feedLabel"></div>
+    <div class="mnemonic-tag">語呂合わせ</div>
+    <div class="mnemonic-body" id="feedMnemonic"></div>
+  </div>
+
+  <button class="next-btn" id="nextBtn" onclick="nextQ()">次の問題へ →</button>
+</div>
+
+<!-- FLASHCARD -->
+<div class="screen" id="flashScreen">
+  <div class="flash-topbar">
+    <button class="back-btn" onclick="goHome()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="flash-counter" id="flashCounter">1 / 42</div>
+    <button class="back-btn" onclick="shuffleFlash()" title="シャッフル">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+    </button>
+  </div>
+
+  <div class="flashcard" id="flashcard" onclick="flipCard()">
+    <div class="learned-badge" id="flashLearnedBadge">覚えた</div>
+    <div class="flash-tap-hint" id="flashHint">タップで意味を表示</div>
+    <div class="flash-word" id="flashWord">match</div>
+    <div class="flash-phonetic" id="flashPhonetic">/mætʃ/</div>
+    <div class="flash-meaning" id="flashMeaning" style="display:none"></div>
+  </div>
+
+  <button class="learned-btn" id="learnedBtn" onclick="toggleLearned()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+    覚えた！
+  </button>
+
+  <div class="mnemonic-strip">
+    <div class="mnemonic-tag-white">語呂合わせ</div>
+    <div class="mnemonic-text-white" id="flashMnemonic"></div>
+  </div>
+
+  <div class="flash-nav">
+    <button class="nav-btn" onclick="flashPrev()">← 前</button>
+    <button class="nav-btn center" onclick="speakFlash()">発音</button>
+    <button class="nav-btn" onclick="flashNext()">次 →</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="resultScreen">
+  <div class="result-wrap">
+    <div class="result-card">
+      <div class="result-title">テスト結果</div>
+      <div class="result-score" id="rScore">0</div>
+      <div class="result-denom" id="rDenom">/ 20問正解</div>
+      <div class="result-pct" id="rPct">—</div>
+      <div class="result-msg" id="rMsg"></div>
+      <div class="result-actions">
+        <button class="btn-retry" onclick="startQuiz()">もう一度チャレンジ</button>
+        <button class="btn-home" onclick="goHome()">ホームに戻る</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<div class="confetti-wrap" id="confettiWrap"></div>
+
+<script>
+// ===== VOCAB DATA =====
+const VOCAB = [
+  { word:"match",       jp:"一致する / 試合",         phonetic:"/mætʃ/",         mnemonic:"マッチ棒を並べて「ぴったり一致！」と確認する場面を想像しよう" },
+  { word:"object",      jp:"反対する / 物体",          phonetic:"/ˈɒbdʒɪkt/",     mnemonic:"「おぶじゃくと（お腹がつかえて）」物体に反対！" },
+  { word:"progress",    jp:"進歩する / 前進",          phonetic:"/ˈprəʊɡres/",    mnemonic:"「プログレッシブ」は「プログレス(進歩)」の形容詞。どんどん前進する" },
+  { word:"regard",      jp:"みなす / 尊重する",        phonetic:"/rɪˈɡɑːd/",      mnemonic:"「リガード」→ 利がある人として尊重してみなす" },
+  { word:"rush",        jp:"急ぐ / 殺到する",          phonetic:"/rʌʃ/",           mnemonic:"ラッシュアワー：みんながわーっと急いで殺到する時間帯" },
+  { word:"stair",       jp:"階段 / 段",               phonetic:"/steər/",          mnemonic:"「ステア」→ ステアリングを握りながら階段をイメージ。take the stairs = 階段を使う" },
+  { word:"appearance",  jp:"外見 / 登場 / 出席",      phonetic:"/əˈpɪərəns/",    mnemonic:"「アピアランス」→ アピールする=現れること。外見で登場をアピール" },
+  { word:"cross",       jp:"横切る / 怒った",          phonetic:"/krɒs/",          mnemonic:"バツ印(クロス)をつけながらプンプン怒って道を横切る" },
+  { word:"divide",      jp:"分ける / 割る",            phonetic:"/dɪˈvaɪd/",      mnemonic:"「ディ・バイド」→ 2つにバイッと分ける感じ" },
+  { word:"empty",       jp:"空の / 空っぽにする",      phonetic:"/ˈempti/",        mnemonic:"「エンプティ」→ えんぴつケースが空っぽ(empty)" },
+  { word:"proof",       jp:"証拠 / 証明",              phonetic:"/pruːf/",         mnemonic:"「プルーフ！」→ プルーフを出せ！証拠を見せろ！" },
+  { word:"respect",     jp:"尊重する / 尊敬",          phonetic:"/rɪˈspekt/",     mnemonic:"「リスペクト」は日本語でも「尊敬・尊重」の意味で使う" },
+  { word:"single",      jp:"ひとつの / 独身の",        phonetic:"/ˈsɪŋɡl/",       mnemonic:"シングルベッド＝一人用＝ひとつ。独身者もシングル" },
+  { word:"wing",        jp:"翼 / (建物の)棟",          phonetic:"/wɪŋ/",           mnemonic:"鳥のウィング(翼)が左右に広がる＝建物の左右の棟もウィング" },
+  { word:"worth",       jp:"〜の価値がある",           phonetic:"/wɜːθ/",         mnemonic:"「ワース」→ いくらのワース(価値)がある？ worth doing = やる価値あり" },
+  { word:"anywhere",    jp:"どこへでも / どこにでも",  phonetic:"/ˈeniweər/",     mnemonic:"any(どんな) + where(場所) = どこにでも" },
+  { word:"guess",       jp:"推測する / 当てる",        phonetic:"/ɡes/",           mnemonic:"「ゲス」→ ゲスな答えでも推測して当ててみる" },
+  { word:"length",      jp:"長さ / 期間",              phonetic:"/leŋθ/",          mnemonic:"「レングス」→ レンジで測る長さ。arm's length = 一定の距離" },
+  { word:"solve",       jp:"解決する / 解く",          phonetic:"/sɒlv/",          mnemonic:"「ソルブ！」→ ソルジャーがバシッと問題を解決する" },
+  { word:"storm",       jp:"嵐 / 猛攻撃する",          phonetic:"/stɔːm/",         mnemonic:"「ストーム」→ そのまま嵐！ブレインストーミング(脳に嵐)" },
+  { word:"willing",     jp:"進んで〜する / 意欲的な",  phonetic:"/ˈwɪlɪŋ/",       mnemonic:"「ウィリング」→ ウィリアムは何でも進んでやる意欲的な人" },
+  { word:"chapter",     jp:"章 / 支部",                phonetic:"/ˈtʃæptər/",     mnemonic:"「チャプター」→ ゲームでもよく見るChapter 1(第1章)" },
+  { word:"crowded",     jp:"混雑した / 満員の",        phonetic:"/ˈkraʊdɪd/",     mnemonic:"crowd(群衆)+ ed → 群衆でいっぱい＝混雑した" },
+  { word:"custom",      jp:"習慣 / 慣習",              phonetic:"/ˈkʌstəm/",      mnemonic:"カスタムカー＝自分流のこだわり＝習慣(自分のやり方)" },
+  { word:"praise",      jp:"褒める / 称賛する",        phonetic:"/preɪz/",         mnemonic:"「プレイズ」→ プレイがうまい！とほめちぎる" },
+  { word:"bright",      jp:"明るい / 賢い / 鮮やかな", phonetic:"/braɪt/",         mnemonic:"「ブライト」→ ブライトな未来、頭が明るい＝賢い" },
+  { word:"century",     jp:"世紀 / 100年",             phonetic:"/ˈsentʃəri/",    mnemonic:"「センチュリー」→ センチ(100)がついて100年＝1世紀" },
+  { word:"scientific",  jp:"科学的な",                  phonetic:"/ˌsaɪənˈtɪfɪk/", mnemonic:"「サイエンス」の形容詞。科学(science)的(ific)" },
+  { word:"vote",        jp:"投票する / 票",             phonetic:"/vəʊt/",          mnemonic:"「ボート」→ ボートに乗って投票所に向かう姿を想像" },
+  { word:"anyway",      jp:"とにかく / どうせ",         phonetic:"/ˈeniweɪ/",      mnemonic:"any(どんな) + way(方法)でも = とにかく" },
+  { word:"married",     jp:"既婚の / 結婚した",        phonetic:"/ˈmærid/",        mnemonic:"「マリッド」→ マリーさんがmarry(結婚)した＝marriedになった" },
+  { word:"worried",     jp:"心配している / 不安な",    phonetic:"/ˈwʌrid/",        mnemonic:"「ウォリード」→ worry(心配)が過去・結果に＝心配している状態" },
+  { word:"aware",       jp:"気づいている / 意識している",phonetic:"/əˈweər/",      mnemonic:"「アウェア」→ アウェー(敵地)では状況を常に意識・把握しておく" },
+  { word:"balance",     jp:"残高 / バランス / 均衡",   phonetic:"/ˈbæləns/",      mnemonic:"「バランス」そのまま！体のバランス。銀行口座の残高もbalance" },
+  { word:"content",     jp:"内容 / 満足している",      phonetic:"/ˈkɒntent/",     mnemonic:"コンテンツ(contents)＝中身・内容。satisfied→contentも満足した意味" },
+  { word:"lift",        jp:"持ち上げる / エレベーター", phonetic:"/lɪft/",          mnemonic:"「リフト」→ スキー場のリフトが人を持ち上げるイメージ" },
+  { word:"occasion",    jp:"機会 / 場合 / (特別な)行事",phonetic:"/əˈkeɪʒn/",     mnemonic:"「オケージョン」→ on this occasion(この機会に)。特別な場合のドレス" },
+  { word:"earn",        jp:"稼ぐ / 得る",              phonetic:"/ɜːrn/",          mnemonic:"「アーン」→ アーンと頑張って働いてお金を稼ぐ" },
+  { word:"formal",      jp:"正式な / 格式ばった",      phonetic:"/ˈfɔːrml/",      mnemonic:"「フォーマル」→ フォーマルウェア＝正式な場の服装" },
+  { word:"sum",         jp:"合計 / 金額",              phonetic:"/sʌm/",           mnemonic:"「サム」→ サムライが合計の計算をする。sum up = まとめる" },
+  // p.70-71
+  { word:"certainly",   jp:"確かに / もちろん",        phonetic:"/ˈsɜːrtnli/",    mnemonic:"certain(確かな)＋ly＝確かに。Certainly, sir!(もちろんです)" },
+  { word:"method",      jp:"方法 / 手段",              phonetic:"/ˈmeθəd/",       mnemonic:"「メソッド」→ メソッドは日本語でも手法・方法の意味で使う" },
+  { word:"claim",       jp:"主張する / 請求する",      phonetic:"/kleɪm/",        mnemonic:"「クレイム」→ クレームを入れる＝権利を主張・請求する" },
+  { word:"immediately", jp:"すぐに / 直ちに",          phonetic:"/ɪˈmiːdiətli/",  mnemonic:"immediate(即時)＋ly＝すぐに。immediate reply(即返信)" },
+  { word:"law",         jp:"法律 / 法則",              phonetic:"/lɔː/",          mnemonic:"「ロー」→ law school(法科大学院)。ローで定められたもの＝法律" },
+  { word:"row",         jp:"列 / 行",                  phonetic:"/rəʊ/",          mnemonic:"「ロウ」→ in a row(一列に)。3 years in a row(3年連続)" },
+  { word:"downtown",    jp:"都心 / 中心街",            phonetic:"/ˌdaʊnˈtaʊn/",  mnemonic:"「ダウンタウン」→ お笑いコンビ名でもおなじみ。都会のど真ん中" },
+  { word:"helpful",     jp:"役立つ / 助けになる",      phonetic:"/ˈhelpfl/",      mnemonic:"help(助ける)＋ful(いっぱい)＝役立つ。helpful advice(有益なアドバイス)" },
+  { word:"track",       jp:"追跡する / 路線 / 道",     phonetic:"/træk/",         mnemonic:"「トラック」→ 陸上トラック(路線)。荷物を追跡(track)する" },
+  { word:"value",       jp:"価値 / 重視する",          phonetic:"/ˈvæljuː/",      mnemonic:"「バリュー」→ バリュー(価値)セット。We value our customers(重視する)" },
+  // p.72-73
+  { word:"ability",     jp:"能力 / 才能",              phonetic:"/əˈbɪlɪti/",    mnemonic:"「アビリティ」→ ゲームのアビリティ＝キャラの能力・才能" },
+  { word:"collect",     jp:"集める / 収集する",        phonetic:"/kəˈlekt/",      mnemonic:"「コレクト」→ コレクション(collection)を集める" },
+  { word:"comfortable", jp:"快適な / 心地よい",        phonetic:"/ˈkʌmftəbl/",   mnemonic:"「カンファタブル」→ comfort(快適さ)＋able＝快適な" },
+  { word:"deal",        jp:"取引 / 扱う / 処理する",   phonetic:"/diːl/",         mnemonic:"「ディール」→ ビジネスでディール(取引)をまとめる。a great deal(大量)" },
+  { word:"gather",      jp:"集まる / 集める",          phonetic:"/ˈɡæðər/",       mnemonic:"「ギャザー」→ ギャザーを寄せる=布を集める。人が集まるgathering" },
+  { word:"unable",      jp:"できない",                  phonetic:"/ʌnˈeɪbl/",     mnemonic:"un(否定)＋able(できる)＝できない。be unable to do(〜できない)" },
+  { word:"officer",     jp:"役員 / 将校 / 警官",       phonetic:"/ˈɒfɪsər/",      mnemonic:"「オフィサー」→ office(会社)の人→役員。CEO=chief executive officer" },
+  { word:"role",        jp:"役割 / 役",                phonetic:"/rəʊl/",         mnemonic:"「ロール」→ ロールプレイ＝役割を演じる。play a role(役割を担う)" },
+  { word:"bit",         jp:"少し / 少量",              phonetic:"/bɪt/",          mnemonic:"「ビット」→ a bit(少し)。ビット(最小単位)＝ほんの少し" },
+  { word:"figure",      jp:"数字 / 人物 / 考える",     phonetic:"/ˈfɪɡər/",       mnemonic:"「フィギュア」→ figure skating(フィギュア)の人物。a famous figure(著名人)" },
+  // p.74-75
+  { word:"fuel",        jp:"燃料 / 燃料を補給する",    phonetic:"/fjuːəl/",       mnemonic:"「フュエル」→ フュエル(燃料)を入れてエンジン全開。fuel efficiency(燃費)" },
+  { word:"regarding",   jp:"〜に関して / 〜について",  phonetic:"/rɪˈɡɑːrdɪŋ/",  mnemonic:"regard(関する)＋ing＝〜に関して。メールの件名によく登場する表現" },
+  { word:"reasonable",  jp:"合理的な / 手頃な",        phonetic:"/ˈriːznəbl/",    mnemonic:"「リーズナブル」→ 日本語でもリーズナブル＝手頃・合理的" },
+  { word:"arrival",     jp:"到着 / 到来",              phonetic:"/əˈraɪvl/",      mnemonic:"「アライバル」→ 空港のArrival(到着口)。arrive(到着する)の名詞形" },
+  { word:"twice",       jp:"2回 / 2倍",               phonetic:"/twaɪs/",        mnemonic:"「トワイス」→ twice as many(2倍の数)。2回＝two times＝twice" },
+  { word:"central",     jp:"中心の / 中央の",          phonetic:"/ˈsentrəl/",     mnemonic:"「セントラル」→ セントラルパーク＝中央公園。the center＝central" },
+  { word:"district",    jp:"地区 / 地域",              phonetic:"/ˈdɪstrɪkt/",   mnemonic:"「ディストリクト」→ 映画District 9(地区9)。行政区域・地区" },
+  { word:"modern",      jp:"現代の / 近代的な",        phonetic:"/ˈmɒdn/",        mnemonic:"「モダン」→ モダンアート＝現代的な芸術。state-of-the-art=most modern" },
+  { word:"permit",      jp:"許可する / 許可証",        phonetic:"/pəˈmɪt/",       mnemonic:"「パーミット」→ パーミット(許可証)がないと入れない場所" },
+  { word:"positive",    jp:"肯定的な / 前向きな",      phonetic:"/ˈpɒzətɪv/",    mnemonic:"「ポジティブ」→ 日本語でもポジティブ＝前向き・肯定的" },
+  // p.76-77
+  { word:"profit",      jp:"利益 / 利益を得る",        phonetic:"/ˈprɒfɪt/",      mnemonic:"「プロフィット」→ プロが得る利益(profit)。a profitable business(収益性の高い)" },
+  { word:"rather",      jp:"むしろ / かなり",          phonetic:"/ˈrɑːðər/",      mnemonic:"「ラザー」→ rather than(〜よりもむしろ)。I'd rather stay home(むしろ家にいたい)" },
+  { word:"surprised",   jp:"驚いた",                   phonetic:"/səˈpraɪzd/",   mnemonic:"「サプライズド」→ サプライズ(surprise)された＝驚いた" },
+  { word:"address",     jp:"住所 / 演説する / 対処する",phonetic:"/ˈædrɛs/",      mnemonic:"「アドレス」→ メールアドレス＝住所。address the audience(演説する)" },
+  { word:"education",   jp:"教育 / 学習",              phonetic:"/ˌɛdjʊˈkeɪʃn/", mnemonic:"「エデュケーション」→ educate(教育する)の名詞形。educational programs(教育番組)" },
+  { word:"tip",         jp:"チップ / 先端 / 助言",     phonetic:"/tɪp/",          mnemonic:"「ティップ」→ チップ(tip)を渡す。アイスバーグのtip(先端)" },
+  { word:"automobile",  jp:"自動車",                   phonetic:"/ˈɔːtəməbiːl/", mnemonic:"「オートモービル」→ auto(自動)＋mobile(動く)＝自動車。automotive parts(車部品)" },
+  { word:"garage",      jp:"車庫 / ガレージ",          phonetic:"/ˈɡærɑːʒ/",      mnemonic:"「ガラージュ」→ ガレージセール＝車庫(garage)で行う sale" },
+  { word:"handle",      jp:"扱う / 取っ手",            phonetic:"/ˈhændl/",       mnemonic:"「ハンドル」→ ハンドルで車を扱う。handle luggage(荷物を扱う)" },
+  { word:"knowledge",   jp:"知識 / 知ること",          phonetic:"/ˈnɒlɪdʒ/",     mnemonic:"「ノリッジ」→ know(知る)＋ledge＝知識。knowledgeable(知識豊富な)" },
+  // p.78-79
+  { word:"private",     jp:"個人の / 非公開の",        phonetic:"/ˈpraɪvɪt/",    mnemonic:"「プライベート」→ 日本語でもプライベート＝個人的なこと" },
+  { word:"realize",     jp:"気づく / 実現する",        phonetic:"/ˈriːəlaɪz/",   mnemonic:"「リアライズ」→ リアル(real)に気づく。I didn't realize(気づかなかった)" },
+  { word:"reply",       jp:"返答する / 返信",          phonetic:"/rɪˈplaɪ/",      mnemonic:"「リプライ」→ SNSのリプライ(reply)＝返信・返答" },
+  { word:"rest",        jp:"休む / 残り",              phonetic:"/rest/",         mnemonic:"「レスト」→ レストラン(restaurant)で休む。the rest of(残り)" },
+  { word:"familiar",    jp:"よく知っている / 親しみやすい",phonetic:"/fəˈmɪliər/",mnemonic:"「ファミリア」→ ファミリー(family)的な感じ＝親しみやすい" },
+  { word:"former",      jp:"以前の / 前者の",          phonetic:"/ˈfɔːrmər/",    mnemonic:"「フォーマー」→ 前(fore)のもの＝以前の。the former(前者) vs the latter(後者)" },
+  { word:"heating",     jp:"暖房 / 加熱",              phonetic:"/ˈhiːtɪŋ/",     mnemonic:"heat(熱)＋ing＝暖房・加熱中。heating system(暖房システム)" },
+  { word:"nearly",      jp:"ほとんど / もう少しで",    phonetic:"/ˈnɪərli/",     mnemonic:"「ニアリー」→ near(近い)＋ly＝ほとんど(もう少しで届く感じ)" },
+  { word:"plastic",     jp:"プラスチック / 柔軟な",    phonetic:"/ˈplæstɪk/",    mnemonic:"「プラスティック」→ そのままプラスチック製品の素材名" },
+  { word:"steel",       jp:"鋼鉄 / 鋼",               phonetic:"/stiːl/",        mnemonic:"「スティール」→ スチール(steel)製の鋼鉄フレーム" },
+  // p.80-81
+  { word:"demand",      jp:"要求する / 需要",          phonetic:"/dɪˈmɑːnd/",    mnemonic:"「デマンド」→ demand(需要)と supply(供給)。強く要求する" },
+  { word:"distance",    jp:"距離 / 遠さ",              phonetic:"/ˈdɪstəns/",    mnemonic:"「ディスタンス」→ ソーシャルディスタンス＝社会的距離" },
+  { word:"easily",      jp:"簡単に / 容易に",          phonetic:"/ˈiːzɪli/",     mnemonic:"「イージリー」→ easy(簡単)＋ly＝簡単に。This system is easy to use(簡単)" },
+  { word:"pleasure",    jp:"喜び / 楽しみ",            phonetic:"/ˈpleʒər/",      mnemonic:"「プレジャー」→ pleasure boat(遊覧船)。Pleased to meet you(喜んで)" },
+  { word:"remain",      jp:"残る / のままでいる",      phonetic:"/rɪˈmeɪn/",     mnemonic:"「リメイン」→ remaining(残りの)。Please remain seated(そのまま座って)" },
+  { word:"standard",    jp:"標準の / 基準",            phonetic:"/ˈstændərd/",   mnemonic:"「スタンダード」→ 日本語でもスタンダード＝標準・基準。standard procedure(標準手順)" },
+  { word:"carefully",   jp:"注意して / 慎重に",        phonetic:"/ˈkeərfəli/",   mnemonic:"care(注意)＋fully＝注意して慎重に。Drive with care(注意して運転)" },
+  { word:"clerk",       jp:"店員 / 事務員",            phonetic:"/klɑːrk/",       mnemonic:"「クラーク」→ クラーク(clerk)さんはお店や事務所のスタッフ" },
+  { word:"common",      jp:"一般的な / 共通の",        phonetic:"/ˈkɒmən/",       mnemonic:"「コモン」→ コモンセンス(common sense)＝一般的な常識" },
+  { word:"compare",     jp:"比べる / 比較する",        phonetic:"/kəmˈpeər/",    mnemonic:"「コンペア」→ compare products(製品を比べる)。have in common(共通点がある)" },
+  // p.82-83
+  { word:"electricity", jp:"電気 / 電力",              phonetic:"/ɪˌlekˈtrɪsɪti/",mnemonic:"「エレクトリシティ」→ electric(電気の)の名詞形。fuel efficiency(燃費)と対比" },
+  { word:"whole",       jp:"全体の / 全部の",          phonetic:"/həʊl/",         mnemonic:"「ホール」→ the whole team(チーム全体)。on the whole(全体的に)" },
+  { word:"abroad",      jp:"海外に / 外国で",          phonetic:"/əˈbrɔːd/",     mnemonic:"「アブロード」→ go abroad(海外に行く)。abroad＝広い世界(海外)へ" },
+  { word:"approach",    jp:"近づく / 取り組み方",      phonetic:"/əˈprəʊtʃ/",    mnemonic:"「アプローチ」→ アプローチ(approach)する＝近づく・取り組む" },
+  { word:"borrow",      jp:"借りる",                   phonetic:"/ˈbɒrəʊ/",      mnemonic:"「ボロウ」→ ボロを借りる＝borrow(借りる)。lend(貸す)の反対" },
+  { word:"bottom",      jp:"底 / 最下部",              phonetic:"/ˈbɒtəm/",      mnemonic:"「ボトム」→ the bottom shelf(一番下の棚)。at the bottom(底に)" },
+  { word:"duty",        jp:"義務 / 職務 / 関税",       phonetic:"/ˈdjuːti/",     mnemonic:"「デューティ」→ duty free(免税)＝関税(duty)なし。職務を果たす義務" },
+  { word:"separate",    jp:"分ける / 別々の",          phonetic:"/ˈsepərɪt/",    mnemonic:"「セパレート」→ セパレート(上下別々)の服＝別々の・分ける" },
+  { word:"subject",     jp:"主題 / 科目 / 対象",       phonetic:"/ˈsʌbdʒɪkt/",   mnemonic:"「サブジェクト」→ メールのsubject(件名)＝主題。学校の科目もsubject" },
+  { word:"tax",         jp:"税金 / 課税する",          phonetic:"/tæks/",         mnemonic:"「タックス」→ tax free(免税)。Prices are subject to tax(税別)" },
+];
+
+// ===== STATE =====
+let quizList = [], curQ = 0, score = 0, numQ = 20, answered = false;
+let flashList = [], flashIdx = 0, flashFlipped = false;
+let tries = parseInt(localStorage.getItem('gf_tries')||'0');
+let best  = localStorage.getItem('gf_best') || null;
+let learned = new Set(JSON.parse(localStorage.getItem('gf_learned')||'[]'));
+
+function saveLearned() {
+  localStorage.setItem('gf_learned', JSON.stringify([...learned]));
+}
+
+// ===== INIT =====
+function init() {
+  document.getElementById('statWords').textContent = VOCAB.length;
+  document.getElementById('statLearned').textContent = learned.size;
+  document.getElementById('statBest').textContent = best ? best + '%' : '—';
+}
+
+function setCount(n, el) {
+  numQ = n;
+  document.querySelectorAll('.count-opt').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ===== SCREENS =====
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome() { show('homeScreen'); init(); }
+
+// ===== QUIZ =====
+function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
+
+function startQuiz(unlearnedOnly) {
+  let pool = unlearnedOnly ? VOCAB.filter(v => !learned.has(v.word)) : VOCAB;
+  if (pool.length === 0) {
+    alert('未習得の単語がありません。全単語が覚えた済みです！');
+    return;
+  }
+  if (pool.length < 4) {
+    alert('未習得の単語が少なすぎます（最低4語必要）。');
+    return;
+  }
+  quizList = shuffle(pool).slice(0, Math.min(numQ, pool.length));
+  curQ = 0; score = 0; answered = false;
+  show('quizScreen');
+  renderQ();
+}
+
+function renderQ() {
+  const q = quizList[curQ];
+  answered = false;
+  document.getElementById('qTag').textContent = 'Q ' + (curQ+1) + ' / ' + quizList.length;
+  document.getElementById('qWord').textContent = q.word;
+  document.getElementById('qPhonetic').textContent = q.phonetic;
+  document.getElementById('progBar').style.width = (curQ / quizList.length * 100) + '%';
+  document.getElementById('scoreChip').textContent = score + ' / ' + curQ;
+  document.getElementById('feedCard').classList.remove('visible');
+  document.getElementById('nextBtn').style.display = 'none';
+
+  const wrong = shuffle(VOCAB.filter(v=>v.word!==q.word)).slice(0,3);
+  const opts = shuffle([q, ...wrong]);
+  const el = document.getElementById('choices');
+  el.innerHTML = '';
+  opts.forEach(o => {
+    const b = document.createElement('button');
+    b.className = 'choice-btn';
+    b.textContent = o.jp;
+    b.onclick = () => pick(b, o.word === q.word, q);
+    el.appendChild(b);
+  });
+}
+
+function pick(btn, correct, q) {
+  if (answered) return;
+  answered = true;
+  if (correct) {
+    btn.classList.add('correct');
+    score++;
+    document.getElementById('feedLabel').className = 'feedback-label ok';
+    document.getElementById('feedLabel').textContent = '正解！';
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.choice-btn').forEach(b => {
+      if (b.textContent === q.jp) b.classList.add('correct');
+    });
+    document.getElementById('feedLabel').className = 'feedback-label ng';
+    document.getElementById('feedLabel').textContent = '不正解... 正解：' + q.jp;
+  }
+  document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+  document.getElementById('feedMnemonic').textContent = q.mnemonic;
+  document.getElementById('feedCard').classList.add('visible');
+  document.getElementById('nextBtn').style.display = 'block';
+  document.getElementById('scoreChip').textContent = score + ' / ' + (curQ+1);
+}
+
+function nextQ() {
+  curQ++;
+  if (curQ >= quizList.length) showResult();
+  else renderQ();
+}
+
+function speakCurrent() { speak(document.getElementById('qWord').textContent); }
+
+// ===== RESULT =====
+function showResult() {
+  tries++;
+  localStorage.setItem('gf_tries', tries);
+  const pct = Math.round(score / quizList.length * 100);
+  if (!best || pct > parseInt(best)) { best = pct; localStorage.setItem('gf_best', pct); }
+
+  document.getElementById('rScore').textContent = score;
+  document.getElementById('rDenom').textContent = '/ ' + quizList.length + '問正解';
+
+  let grade, msg, cls;
+  if (pct >= 90) { grade='S'; msg='完璧！さすがすぎる！'; cls='s'; launchConfetti(); }
+  else if (pct >= 70) { grade='A'; msg='かなりいい感じ！もう少し！'; cls='a'; }
+  else if (pct >= 50) { grade='B'; msg='半分クリア！語呂合わせで復習しよう'; cls='b'; }
+  else              { grade='C'; msg='単語帳で見直してから再挑戦！'; cls='c'; }
+
+  const pctEl = document.getElementById('rPct');
+  pctEl.textContent = grade + ' ランク — ' + pct + '%';
+  pctEl.className = 'result-pct ' + cls;
+  document.getElementById('rMsg').textContent = msg;
+  show('resultScreen');
+}
+
+// ===== FLASHCARD =====
+function startFlash(unlearnedOnly) {
+  let pool = unlearnedOnly ? VOCAB.filter(v => !learned.has(v.word)) : VOCAB;
+  if (pool.length === 0) {
+    alert('未習得の単語がありません。全単語が覚えた済みです！');
+    return;
+  }
+  flashList = [...pool];
+  flashIdx = 0;
+  show('flashScreen');
+  renderFlash();
+}
+
+function shuffleFlash() {
+  flashList = shuffle(flashList);
+  flashIdx = 0;
+  renderFlash();
+}
+
+function renderFlash() {
+  const v = flashList[flashIdx];
+  flashFlipped = false;
+  document.getElementById('flashCounter').textContent = (flashIdx+1) + ' / ' + flashList.length;
+  document.getElementById('flashWord').textContent = v.word;
+  document.getElementById('flashPhonetic').textContent = v.phonetic;
+  document.getElementById('flashMeaning').textContent = v.jp;
+  document.getElementById('flashMeaning').style.display = 'none';
+  document.getElementById('flashPhonetic').style.display = '';
+  document.getElementById('flashHint').textContent = 'タップで意味を表示';
+  document.getElementById('flashMnemonic').textContent = v.mnemonic;
+  // Update learned button state
+  const isLearned = learned.has(v.word);
+  const btn = document.getElementById('learnedBtn');
+  const badge = document.getElementById('flashLearnedBadge');
+  btn.className = 'learned-btn' + (isLearned ? ' checked' : '');
+  btn.innerHTML = isLearned
+    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> 覚えた！（取り消す）'
+    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2z"/></svg> 覚えた！';
+  badge.className = 'learned-badge' + (isLearned ? ' show' : '');
+}
+
+function toggleLearned() {
+  const v = flashList[flashIdx];
+  if (learned.has(v.word)) {
+    learned.delete(v.word);
+  } else {
+    learned.add(v.word);
+  }
+  saveLearned();
+  renderFlash();
+}
+
+function flipCard() {
+  const v = flashList[flashIdx];
+  if (!flashFlipped) {
+    flashFlipped = true;
+    document.getElementById('flashMeaning').style.display = 'block';
+    document.getElementById('flashPhonetic').style.display = 'none';
+    document.getElementById('flashHint').textContent = 'タップで単語に戻す';
+  } else {
+    renderFlash();
+  }
+}
+
+function flashPrev() {
+  flashIdx = (flashIdx - 1 + flashList.length) % flashList.length;
+  renderFlash();
+}
+function flashNext() {
+  flashIdx = (flashIdx + 1) % flashList.length;
+  renderFlash();
+}
+function speakFlash() { speak(flashList[flashIdx].word); }
+
+// ===== SPEECH =====
+// 起動時に音声を先読みしておく
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+function speak(word) {
+  if (!('speechSynthesis' in window)) {
+    alert('このブラウザは発音機能に対応していません');
+    return;
+  }
+  window.speechSynthesis.cancel();
+
+  function doSpeak() {
+    const u = new SpeechSynthesisUtterance(word);
+    u.lang = 'en-US';
+    u.rate = 0.85;
+    u.pitch = 1;
+    const voices = window.speechSynthesis.getVoices();
+    const en = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
+    if (en) u.voice = en;
+    window.speechSynthesis.speak(u);
+  }
+
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) {
+    doSpeak();
+  } else {
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.onvoiceschanged = null;
+      doSpeak();
+    };
+    setTimeout(doSpeak, 300); // フォールバック
+  }
+}
+
+// ===== CONFETTI =====
+function launchConfetti() {
+  const wrap = document.getElementById('confettiWrap');
+  wrap.innerHTML = '';
+  const colors = ['#c0718a','#8a7ab8','#6aa88c','#b88a50','#d4a0b4','#a090cc'];
+  for (let i = 0; i < 80; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.width = (6 + Math.random()*8) + 'px';
+    p.style.height = (6 + Math.random()*8) + 'px';
+    p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    p.style.animationDuration = (1.5 + Math.random()*2) + 's';
+    p.style.animationDelay = Math.random()*1.2 + 's';
+    wrap.appendChild(p);
+    setTimeout(() => p.remove(), 4000);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
