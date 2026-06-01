@@ -44,7 +44,6 @@ body {
   position: relative;
 }
 
-/* ===== SCREENS ===== */
 .screen {
   display: none;
   flex-direction: column;
@@ -54,12 +53,153 @@ body {
 }
 .screen.active { display: flex; }
 
+/* ===== LOGIN / REGISTER ===== */
+.auth-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  width: 100%;
+}
+.auth-card {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 36px 24px 28px;
+  width: 100%;
+  box-shadow: var(--card-shadow-md);
+  border: 1px solid var(--border);
+}
+.auth-title {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--rose), var(--lavender));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.auth-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 28px;
+}
+.auth-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.auth-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.auth-avatar svg { opacity: 0.35; }
+.auth-avatar img { width:100%; height:100%; object-fit:cover; }
+.avatar-hint { font-size: 0.68rem; color: var(--muted); }
+.auth-input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.93rem;
+  color: var(--text);
+  background: var(--bg);
+  margin-bottom: 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.auth-input:focus { border-color: var(--lavender); background: #fff; }
+.auth-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, var(--rose), var(--lavender));
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(130,90,170,0.2);
+  margin-top: 6px;
+  transition: transform 0.1s;
+}
+.auth-btn:active { transform: scale(0.97); }
+.auth-switch {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+.auth-switch span {
+  color: var(--lavender);
+  font-weight: 700;
+  cursor: pointer;
+}
+.auth-error {
+  color: var(--wrong);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 10px;
+  display: none;
+}
+
 /* ===== HOME ===== */
 .home-hero {
   text-align: center;
-  padding: 52px 0 28px;
+  padding: 36px 0 20px;
   color: var(--text);
+  width: 100%;
 }
+.user-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  width: 100%;
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+}
+.user-bar-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.user-bar-avatar img { width:100%; height:100%; object-fit:cover; }
+.user-bar-name { font-size: 0.88rem; font-weight: 800; flex: 1; }
+.logout-btn {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  transition: all 0.1s;
+}
+.logout-btn:active { background: var(--bg); }
+
 .home-hero h1 {
   font-size: 2.8rem;
   font-weight: 900;
@@ -72,7 +212,7 @@ body {
 .home-hero .subtitle {
   font-size: 0.82rem;
   color: var(--muted);
-  margin-top: 8px;
+  margin-top: 6px;
   letter-spacing: 0.5px;
 }
 
@@ -174,7 +314,7 @@ body {
   transition: all 0.1s;
   box-shadow: 0 1px 4px rgba(90,70,130,0.06);
 }
-.back-btn svg { fill: var(--muted); }
+.back-btn svg { fill: currentColor; }
 .back-btn:active { background: var(--bg); }
 .prog-wrap { flex: 1; background: var(--border); border-radius: 99px; height: 6px; overflow: hidden; }
 .prog-bar { height: 100%; background: linear-gradient(90deg, var(--rose), var(--lavender)); border-radius: 99px; transition: width 0.4s cubic-bezier(.4,0,.2,1); }
@@ -480,7 +620,6 @@ body {
 }
 .btn-home:active { background: var(--bg); }
 
-/* Learned button */
 .learned-btn {
   width: 100%;
   padding: 14px;
@@ -502,30 +641,6 @@ body {
 .learned-btn.checked { border-color: var(--sage); background: var(--sage-light); color: #1a5438; }
 .learned-btn:active { transform: scale(0.97); }
 
-/* Filter toggle */
-.filter-toggle {
-  display: flex;
-  background: var(--bg);
-  border-radius: 10px;
-  padding: 3px;
-  margin-bottom: 10px;
-  width: 100%;
-}
-.filter-opt {
-  flex: 1;
-  padding: 8px;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  background: transparent;
-  color: var(--muted);
-  transition: all 0.15s;
-}
-.filter-opt.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 6px rgba(90,70,130,0.08); }
-
-/* Learned badge on card */
 .learned-badge {
   position: absolute;
   top: 14px;
@@ -541,7 +656,6 @@ body {
 }
 .learned-badge.show { display: inline-block; }
 
-/* Confetti */
 .confetti-wrap {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   pointer-events: none; overflow: hidden; z-index: 100;
@@ -556,13 +670,62 @@ body {
   0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
   100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
 }
+
+/* hidden file input */
+#avatarInput { display: none; }
 </style>
 </head>
 <body>
 <div class="app">
 
+<!-- LOGIN -->
+<div class="screen active" id="loginScreen">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-title">銀フレ</div>
+      <div class="auth-sub">ログインして学習を続けよう</div>
+      <div class="auth-error" id="loginError"></div>
+      <input class="auth-input" type="text" id="loginUser" placeholder="ユーザー名" autocomplete="username">
+      <input class="auth-input" type="password" id="loginPass" placeholder="パスワード" autocomplete="current-password">
+      <button class="auth-btn" onclick="doLogin()">ログイン</button>
+      <div class="auth-switch">アカウントがない？ <span onclick="showRegister()">新規登録</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="screen" id="registerScreen">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-title">新規登録</div>
+      <div class="auth-sub">アカウントを作成しよう</div>
+      <div class="auth-error" id="regError"></div>
+      <div class="auth-avatar-wrap">
+        <div class="auth-avatar" id="regAvatarPreview" onclick="document.getElementById('avatarInput').click()">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="#a09aac"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        </div>
+        <div class="avatar-hint">タップして写真を選ぶ（任意）</div>
+      </div>
+      <input type="file" id="avatarInput" accept="image/*" onchange="previewAvatar(this)">
+      <input class="auth-input" type="text" id="regUser" placeholder="ユーザー名" autocomplete="username">
+      <input class="auth-input" type="password" id="regPass" placeholder="パスワード" autocomplete="new-password">
+      <input class="auth-input" type="password" id="regPass2" placeholder="パスワード（確認）" autocomplete="new-password">
+      <button class="auth-btn" onclick="doRegister()">登録する</button>
+      <div class="auth-switch">すでにアカウントがある？ <span onclick="showLogin()">ログイン</span></div>
+    </div>
+  </div>
+</div>
+
 <!-- HOME -->
-<div class="screen active" id="homeScreen">
+<div class="screen" id="homeScreen">
+  <div class="user-bar" style="margin-top:20px;">
+    <div class="user-bar-avatar" id="homeAvatar">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#a09aac"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+    </div>
+    <div class="user-bar-name" id="homeUserName">—</div>
+    <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+  </div>
+
   <div class="home-hero">
     <h1>銀フレ</h1>
     <div class="subtitle">TOEIC Silver Phrases — 英単語マスター</div>
@@ -589,6 +752,7 @@ body {
       <div class="word-count-select">
         <button class="count-opt" data-n="10" onclick="setCount(10,this)">10問</button>
         <button class="count-opt active" data-n="20" onclick="setCount(20,this)">20問</button>
+        <button class="count-opt" data-n="100" onclick="setCount(100,this)">100問</button>
         <button class="count-opt" data-n="9999" onclick="setCount(9999,this)">全問</button>
       </div>
     </div>
@@ -713,7 +877,7 @@ body {
       <div class="result-pct" id="rPct">—</div>
       <div class="result-msg" id="rMsg"></div>
       <div class="result-actions">
-        <button class="btn-retry" onclick="startQuiz()">もう一度チャレンジ</button>
+        <button class="btn-retry" onclick="startQuiz(false)">もう一度チャレンジ</button>
         <button class="btn-home" onclick="goHome()">ホームに戻る</button>
       </div>
     </div>
@@ -721,11 +885,10 @@ body {
 </div>
 
 </div><!-- .app -->
-
 <div class="confetti-wrap" id="confettiWrap"></div>
 
 <script>
-// ===== VOCAB DATA =====
+// ===== VOCAB =====
 const VOCAB = [
   { word:"match",       jp:"一致する / 試合",         phonetic:"/mætʃ/",         mnemonic:"マッチ棒を並べて「ぴったり一致！」と確認する場面を想像しよう" },
   { word:"object",      jp:"反対する / 物体",          phonetic:"/ˈɒbdʒɪkt/",     mnemonic:"「おぶじゃくと（お腹がつかえて）」物体に反対！" },
@@ -767,7 +930,6 @@ const VOCAB = [
   { word:"earn",        jp:"稼ぐ / 得る",              phonetic:"/ɜːrn/",          mnemonic:"「アーン」→ アーンと頑張って働いてお金を稼ぐ" },
   { word:"formal",      jp:"正式な / 格式ばった",      phonetic:"/ˈfɔːrml/",      mnemonic:"「フォーマル」→ フォーマルウェア＝正式な場の服装" },
   { word:"sum",         jp:"合計 / 金額",              phonetic:"/sʌm/",           mnemonic:"「サム」→ サムライが合計の計算をする。sum up = まとめる" },
-  // p.70-71
   { word:"certainly",   jp:"確かに / もちろん",        phonetic:"/ˈsɜːrtnli/",    mnemonic:"certain(確かな)＋ly＝確かに。Certainly, sir!(もちろんです)" },
   { word:"method",      jp:"方法 / 手段",              phonetic:"/ˈmeθəd/",       mnemonic:"「メソッド」→ メソッドは日本語でも手法・方法の意味で使う" },
   { word:"claim",       jp:"主張する / 請求する",      phonetic:"/kleɪm/",        mnemonic:"「クレイム」→ クレームを入れる＝権利を主張・請求する" },
@@ -778,7 +940,6 @@ const VOCAB = [
   { word:"helpful",     jp:"役立つ / 助けになる",      phonetic:"/ˈhelpfl/",      mnemonic:"help(助ける)＋ful(いっぱい)＝役立つ。helpful advice(有益なアドバイス)" },
   { word:"track",       jp:"追跡する / 路線 / 道",     phonetic:"/træk/",         mnemonic:"「トラック」→ 陸上トラック(路線)。荷物を追跡(track)する" },
   { word:"value",       jp:"価値 / 重視する",          phonetic:"/ˈvæljuː/",      mnemonic:"「バリュー」→ バリュー(価値)セット。We value our customers(重視する)" },
-  // p.72-73
   { word:"ability",     jp:"能力 / 才能",              phonetic:"/əˈbɪlɪti/",    mnemonic:"「アビリティ」→ ゲームのアビリティ＝キャラの能力・才能" },
   { word:"collect",     jp:"集める / 収集する",        phonetic:"/kəˈlekt/",      mnemonic:"「コレクト」→ コレクション(collection)を集める" },
   { word:"comfortable", jp:"快適な / 心地よい",        phonetic:"/ˈkʌmftəbl/",   mnemonic:"「カンファタブル」→ comfort(快適さ)＋able＝快適な" },
@@ -789,7 +950,6 @@ const VOCAB = [
   { word:"role",        jp:"役割 / 役",                phonetic:"/rəʊl/",         mnemonic:"「ロール」→ ロールプレイ＝役割を演じる。play a role(役割を担う)" },
   { word:"bit",         jp:"少し / 少量",              phonetic:"/bɪt/",          mnemonic:"「ビット」→ a bit(少し)。ビット(最小単位)＝ほんの少し" },
   { word:"figure",      jp:"数字 / 人物 / 考える",     phonetic:"/ˈfɪɡər/",       mnemonic:"「フィギュア」→ figure skating(フィギュア)の人物。a famous figure(著名人)" },
-  // p.74-75
   { word:"fuel",        jp:"燃料 / 燃料を補給する",    phonetic:"/fjuːəl/",       mnemonic:"「フュエル」→ フュエル(燃料)を入れてエンジン全開。fuel efficiency(燃費)" },
   { word:"regarding",   jp:"〜に関して / 〜について",  phonetic:"/rɪˈɡɑːrdɪŋ/",  mnemonic:"regard(関する)＋ing＝〜に関して。メールの件名によく登場する表現" },
   { word:"reasonable",  jp:"合理的な / 手頃な",        phonetic:"/ˈriːznəbl/",    mnemonic:"「リーズナブル」→ 日本語でもリーズナブル＝手頃・合理的" },
@@ -800,7 +960,6 @@ const VOCAB = [
   { word:"modern",      jp:"現代の / 近代的な",        phonetic:"/ˈmɒdn/",        mnemonic:"「モダン」→ モダンアート＝現代的な芸術。state-of-the-art=most modern" },
   { word:"permit",      jp:"許可する / 許可証",        phonetic:"/pəˈmɪt/",       mnemonic:"「パーミット」→ パーミット(許可証)がないと入れない場所" },
   { word:"positive",    jp:"肯定的な / 前向きな",      phonetic:"/ˈpɒzətɪv/",    mnemonic:"「ポジティブ」→ 日本語でもポジティブ＝前向き・肯定的" },
-  // p.76-77
   { word:"profit",      jp:"利益 / 利益を得る",        phonetic:"/ˈprɒfɪt/",      mnemonic:"「プロフィット」→ プロが得る利益(profit)。a profitable business(収益性の高い)" },
   { word:"rather",      jp:"むしろ / かなり",          phonetic:"/ˈrɑːðər/",      mnemonic:"「ラザー」→ rather than(〜よりもむしろ)。I'd rather stay home(むしろ家にいたい)" },
   { word:"surprised",   jp:"驚いた",                   phonetic:"/səˈpraɪzd/",   mnemonic:"「サプライズド」→ サプライズ(surprise)された＝驚いた" },
@@ -811,7 +970,6 @@ const VOCAB = [
   { word:"garage",      jp:"車庫 / ガレージ",          phonetic:"/ˈɡærɑːʒ/",      mnemonic:"「ガラージュ」→ ガレージセール＝車庫(garage)で行う sale" },
   { word:"handle",      jp:"扱う / 取っ手",            phonetic:"/ˈhændl/",       mnemonic:"「ハンドル」→ ハンドルで車を扱う。handle luggage(荷物を扱う)" },
   { word:"knowledge",   jp:"知識 / 知ること",          phonetic:"/ˈnɒlɪdʒ/",     mnemonic:"「ノリッジ」→ know(知る)＋ledge＝知識。knowledgeable(知識豊富な)" },
-  // p.78-79
   { word:"private",     jp:"個人の / 非公開の",        phonetic:"/ˈpraɪvɪt/",    mnemonic:"「プライベート」→ 日本語でもプライベート＝個人的なこと" },
   { word:"realize",     jp:"気づく / 実現する",        phonetic:"/ˈriːəlaɪz/",   mnemonic:"「リアライズ」→ リアル(real)に気づく。I didn't realize(気づかなかった)" },
   { word:"reply",       jp:"返答する / 返信",          phonetic:"/rɪˈplaɪ/",      mnemonic:"「リプライ」→ SNSのリプライ(reply)＝返信・返答" },
@@ -822,7 +980,6 @@ const VOCAB = [
   { word:"nearly",      jp:"ほとんど / もう少しで",    phonetic:"/ˈnɪərli/",     mnemonic:"「ニアリー」→ near(近い)＋ly＝ほとんど(もう少しで届く感じ)" },
   { word:"plastic",     jp:"プラスチック / 柔軟な",    phonetic:"/ˈplæstɪk/",    mnemonic:"「プラスティック」→ そのままプラスチック製品の素材名" },
   { word:"steel",       jp:"鋼鉄 / 鋼",               phonetic:"/stiːl/",        mnemonic:"「スティール」→ スチール(steel)製の鋼鉄フレーム" },
-  // p.80-81
   { word:"demand",      jp:"要求する / 需要",          phonetic:"/dɪˈmɑːnd/",    mnemonic:"「デマンド」→ demand(需要)と supply(供給)。強く要求する" },
   { word:"distance",    jp:"距離 / 遠さ",              phonetic:"/ˈdɪstəns/",    mnemonic:"「ディスタンス」→ ソーシャルディスタンス＝社会的距離" },
   { word:"easily",      jp:"簡単に / 容易に",          phonetic:"/ˈiːzɪli/",     mnemonic:"「イージリー」→ easy(簡単)＋ly＝簡単に。This system is easy to use(簡単)" },
@@ -833,7 +990,6 @@ const VOCAB = [
   { word:"clerk",       jp:"店員 / 事務員",            phonetic:"/klɑːrk/",       mnemonic:"「クラーク」→ クラーク(clerk)さんはお店や事務所のスタッフ" },
   { word:"common",      jp:"一般的な / 共通の",        phonetic:"/ˈkɒmən/",       mnemonic:"「コモン」→ コモンセンス(common sense)＝一般的な常識" },
   { word:"compare",     jp:"比べる / 比較する",        phonetic:"/kəmˈpeər/",    mnemonic:"「コンペア」→ compare products(製品を比べる)。have in common(共通点がある)" },
-  // p.82-83
   { word:"electricity", jp:"電気 / 電力",              phonetic:"/ɪˌlekˈtrɪsɪti/",mnemonic:"「エレクトリシティ」→ electric(電気の)の名詞形。fuel efficiency(燃費)と対比" },
   { word:"whole",       jp:"全体の / 全部の",          phonetic:"/həʊl/",         mnemonic:"「ホール」→ the whole team(チーム全体)。on the whole(全体的に)" },
   { word:"abroad",      jp:"海外に / 外国で",          phonetic:"/əˈbrɔːd/",     mnemonic:"「アブロード」→ go abroad(海外に行く)。abroad＝広い世界(海外)へ" },
@@ -844,21 +1000,268 @@ const VOCAB = [
   { word:"separate",    jp:"分ける / 別々の",          phonetic:"/ˈsepərɪt/",    mnemonic:"「セパレート」→ セパレート(上下別々)の服＝別々の・分ける" },
   { word:"subject",     jp:"主題 / 科目 / 対象",       phonetic:"/ˈsʌbdʒɪkt/",   mnemonic:"「サブジェクト」→ メールのsubject(件名)＝主題。学校の科目もsubject" },
   { word:"tax",         jp:"税金 / 課税する",          phonetic:"/tæks/",         mnemonic:"「タックス」→ tax free(免税)。Prices are subject to tax(税別)" },
+  // p.151-160
+  { word:"position",    jp:"役職 / 場所 / 立場",        phonetic:"/pəˈzɪʃn/",      mnemonic:"「ポジション」そのまま！野球のポジション＝役職・立場。position yourself(自分を位置づける)" },
+  { word:"repair",      jp:"修理する / 修理",           phonetic:"/rɪˈpeər/",      mnemonic:"「リペア」→ repair shop(修理店)。repairman(修理工)。repair a machine(機械を修理する)" },
+  { word:"local",       jp:"地元の / 地域の",           phonetic:"/ˈləʊkl/",       mnemonic:"「ローカル」→ ローカル線＝地元の路線。local news(地元ニュース)。locally grown(地元産)" },
+  { word:"purpose",     jp:"目的 / 意図",               phonetic:"/ˈpɜːrpəs/",     mnemonic:"「パーパス」→ purpose of the meeting(会議の目的)。on purpose(わざと)。for the purpose of(〜のために)" },
+  { word:"discuss",     jp:"話し合う / 議論する",        phonetic:"/dɪˈskʌs/",      mnemonic:"「ディスカス」→ ディスカッション(discussion)で話し合う。discuss a topic(話題を議論する)" },
+  { word:"expect",      jp:"予期する / 期待する",        phonetic:"/ɪkˈspekt/",     mnemonic:"「エクスペクト」→ expectation(期待)。I expected that(そう思ってた)。as expected(予想通り)" },
+  { word:"increase",    jp:"増加する / 増やす",          phonetic:"/ɪnˈkriːs/",     mnemonic:"「インクリース」→ increase sales(売上増加)。対義語decrease(減少)。an increase in(〜の増加)" },
+  { word:"mention",     jp:"述べる / 言及する",          phonetic:"/ˈmenʃn/",       mnemonic:"「メンション」→ SNSでメンションする＝名前を挙げる・言及する。Don't mention it(どういたしまして)" },
+  { word:"tour",        jp:"見学する / ツアー",          phonetic:"/tʊər/",         mnemonic:"「ツアー」→ factory tour(工場見学)。tourist(観光客)。go on a tour(ツアーに参加する)" },
+  { word:"charge",      jp:"料金 / 担当する / 充電する",  phonetic:"/tʃɑːrdʒ/",     mnemonic:"「チャージ」→ 充電(charge)する。in charge of(〜担当)。service charge(サービス料金)" },
+  // p.161-170
+  { word:"discount",    jp:"割引 / 割引する",            phonetic:"/ˈdɪskaʊnt/",   mnemonic:"「ディスカウント」→ ディスカウントショップ＝割引店。a 20% discount(2割引)。discounted price(割引価格)" },
+  { word:"research",    jp:"調査する / 研究",            phonetic:"/rɪˈsɜːrtʃ/",   mnemonic:"「リサーチ」→ リサーチ(調査)する。researcher(研究者)。market research(市場調査)" },
+  { word:"hire",        jp:"雇う / 採用する",            phonetic:"/haɪər/",        mnemonic:"「ハイヤー」→ ハイヤーで人を雇う。hiring(採用)。hire a taxi(タクシーを借りる)" },
+  { word:"recently",    jp:"最近 / 少し前に",            phonetic:"/ˈriːsntli/",   mnemonic:"「リーセントリー」→ recent(最近の)＋ly＝最近。a recent order(最近の注文)。recently hired(最近採用された)" },
+  { word:"main",        jp:"主な / 主要な",              phonetic:"/meɪn/",         mnemonic:"「メイン」→ メイン料理＝主な一皿。main purpose(主な目的)。mainly(主に)" },
+  { word:"account",     jp:"口座 / アカウント / 説明する", phonetic:"/əˈkaʊnt/",    mnemonic:"「アカウント」→ SNSアカウント＝口座・記録。bank account(銀行口座)。account balance(残高)" },
+  { word:"international", jp:"国際的な / 海外の",        phonetic:"/ˌɪntəˈnæʃənl/", mnemonic:"「インターナショナル」→ そのまま国際的。international airport(国際空港)。international travel(海外旅行)" },
+  { word:"copy",        jp:"コピー / 1冊 / コピーする",  phonetic:"/ˈkɒpi/",        mnemonic:"「コピー」→ a copy of a book(本1冊)。copy machine(コピー機)。carbon copy(写し)" },
+  { word:"probably",    jp:"おそらく",                   phonetic:"/ˈprɒbəbli/",   mnemonic:"「プロバブリー」→ probable(ありそうな)＋ly＝おそらく。probably yes(たぶんそう)" },
+  { word:"process",     jp:"工程 / 手続き / 処理する",   phonetic:"/ˈprəʊses/",     mnemonic:"「プロセス」→ プロセス(工程)を踏む。process an order(注文を処理)。food processing(食品加工)" },
+  // p.171-180
+  { word:"result",      jp:"結果 / 生じる",              phonetic:"/rɪˈzʌlt/",     mnemonic:"「リザルト」→ as a result(結果として)。result in success(成功という結果になる)" },
+  { word:"president",   jp:"社長 / 大統領",              phonetic:"/ˈprezɪdənt/",  mnemonic:"「プレジデント」→ 社長もPresident。vice president(副社長)。CEO(最高経営責任者)とも言う" },
+  { word:"material",    jp:"材料 / 素材 / 資料",          phonetic:"/məˈtɪəriəl/",  mnemonic:"「マテリアル」→ raw materials(原材料)。training materials(研修資料)。promotional materials(販促物)" },
+  { word:"record",      jp:"記録 / 録音 / 記録する",      phonetic:"/ˈrekərd/",     mnemonic:"「レコード」→ レコード(record)を録音・記録する。recorded message(録音メッセージ)。break a record(記録を破る)" },
+  { word:"apply",       jp:"応募する / 申請する / 適用する", phonetic:"/əˈplaɪ/",  mnemonic:"「アプライ」→ apply for a job(仕事に応募)。application(申請書)。apply to X(Xに適用される)" },
+  { word:"detail",      jp:"詳細 / 詳しく述べる",          phonetic:"/ˈdiːteɪl/",  mnemonic:"「ディテール」→ in detail(詳しく)。detailed schedule(詳細スケジュール)。For more details(詳細は)" },
+  { word:"rate",        jp:"料金 / 割合 / 評価する",       phonetic:"/reɪt/",       mnemonic:"「レート」→ 為替レート＝割合。room rate(客室料金)。at the rate of(〜の割合で)" },
+  { word:"industry",    jp:"産業 / 業界",                 phonetic:"/ˈɪndəstri/",  mnemonic:"「インダストリー」→ industry leader(業界リーダー)。industrial(産業の)。music industry(音楽業界)" },
+  { word:"public",      jp:"公共の / 一般の / 一般の人",   phonetic:"/ˈpʌblɪk/",   mnemonic:"「パブリック」→ public park(公園)。in public(人前で)。public transportation(公共交通機関)" },
+  { word:"yet",         jp:"まだ / もう",                  phonetic:"/jet/",        mnemonic:"「イェット」→ not yet(まだ〜ない)。Have you finished yet?(もう終わった？)。否定文・疑問文で使う" },
+  // p.191-200
+  { word:"introduce",   jp:"紹介する / 導入する",          phonetic:"/ˌɪntrəˈdjuːs/", mnemonic:"「イントロデュース」→ introduction(紹介)。Let me introduce myself(自己紹介させてください)" },
+  { word:"reserve",     jp:"予約する / 取っておく",         phonetic:"/rɪˈzɜːrv/",  mnemonic:"「リザーブ」→ reservation(予約)。reserve a table(席を予約)。reserved seat(指定席)" },
+  { word:"allow",       jp:"許可する / 〜させる",           phonetic:"/əˈlaʊ/",     mnemonic:"「アロウ」→ allow me(させてください)。be allowed to do(〜してよい)。No smoking allowed(喫煙禁止)" },
+  { word:"press",       jp:"押す / 報道機関 / プレスする",  phonetic:"/pres/",       mnemonic:"「プレス」→ press conference(記者会見)。press a button(ボタンを押す)。press release(プレスリリース)" },
+  { word:"weather",     jp:"天気 / 天候",                  phonetic:"/ˈweðər/",     mnemonic:"「ウェザー」→ weather forecast(天気予報)。under the weather(体調不良)。bad weather(悪天候)" },
+  { word:"support",     jp:"支持する / 支援 / サポート",    phonetic:"/səˈpɔːrt/",  mnemonic:"「サポート」→ サポート(support)する。technical support(技術支援)。financial support(財政支援)" },
+  { word:"publish",     jp:"出版する / 掲載する",           phonetic:"/ˈpʌblɪʃ/",   mnemonic:"「パブリッシュ」→ publisher(出版社)。publish a book(本を出版)。publication(出版物)" },
+  { word:"describe",    jp:"描写する / 説明する",           phonetic:"/dɪˈskraɪb/", mnemonic:"「デスクライブ」→ description(説明)。describe the situation(状況を説明)。Can you describe it?" },
+  { word:"add",         jp:"加える / 追加する",             phonetic:"/æd/",         mnemonic:"「アド」→ add to the list(リストに追加)。addition(追加)。additionally(さらに)。add up(合計する)" },
+  { word:"deliver",     jp:"届ける / 配達する",             phonetic:"/dɪˈlɪvər/",  mnemonic:"「デリバー」→ food delivery(フードデリバリー)＝届けること。deliver a speech(スピーチをする)" },
+  // p.201-210
+  { word:"state",       jp:"述べる / 状態 / 州",            phonetic:"/steɪt/",      mnemonic:"「ステート」→ New York State(ニューヨーク州)。state of mind(心の状態)。statement(声明・陳述)" },
+  { word:"accept",      jp:"受け入れる / 承諾する",          phonetic:"/əkˈsept/",   mnemonic:"「アクセプト」→ accept an offer(申し出を受け入れる)。acceptance(受諾)。acceptable(受け入れられる)" },
+  { word:"accounting",  jp:"会計 / 経理",                   phonetic:"/əˈkaʊntɪŋ/", mnemonic:"「アカウンティング」→ accounting department(経理部)。accountant(会計士)。account(口座)関連" },
+  { word:"based",       jp:"〜を拠点とする / 〜に基づく",    phonetic:"/beɪst/",     mnemonic:"「ベイスト」→ based in Tokyo(東京拠点)。based on facts(事実に基づく)。base(基地)の形容詞形" },
+  { word:"own",         jp:"所有する / 自分自身の",          phonetic:"/əʊn/",       mnemonic:"「オウン」→ I own this car(この車は私のもの)。on your own(自力で)。ownership(所有権)" },
+  { word:"develop",     jp:"開発する / 発展する",            phonetic:"/dɪˈveləp/",  mnemonic:"「ディベロップ」→ developer(開発者)。develop a skill(スキルを伸ばす)。development(発展)" },
+  { word:"excellent",   jp:"優れた / 素晴らしい",            phonetic:"/ˈeksələnt/", mnemonic:"「エクセレント」→ Excellent!(すばらしい！)日本語でも使う。excellence(卓越性)" },
+  { word:"bill",        jp:"請求書 / 勘定 / 紙幣",           phonetic:"/bɪl/",       mnemonic:"「ビル」→ pay the bill(お会計する)。a dollar bill(1ドル紙幣)。invoice(請求書)とも言う" },
+  { word:"produce",     jp:"生産する / 製品",                phonetic:"/prəˈdjuːs/", mnemonic:"「プロデュース」→ producer(プロデューサー・生産者)。production(生産)。produce results(成果を出す)" },
+  { word:"host",        jp:"主催する / 主人 / 司会者",        phonetic:"/həʊst/",     mnemonic:"「ホスト」→ host a party(パーティーを主催)。TV show host(司会者)。hosting(ホスティング)" },
+  // p.211-220
+  { word:"explain",     jp:"説明する",                       phonetic:"/ɪkˈspleɪn/", mnemonic:"「エクスプレイン」→ explanation(説明)。Please explain(説明してください)。explain how to(〜の仕方を説明)" },
+  { word:"less",        jp:"より少ない / より少なく",         phonetic:"/les/",        mnemonic:"「レス」→ less than(〜より少ない)。more or less(だいたい)。less expensive(より安い)" },
+  { word:"passenger",   jp:"乗客",                           phonetic:"/ˈpæsɪndʒər/", mnemonic:"「パッセンジャー」→ passenger seat(助手席)。bus passenger(バスの乗客)。pass(通る)する人＝乗客" },
+  { word:"successful",  jp:"成功した / うまくいった",         phonetic:"/səkˈsesfəl/", mnemonic:"「サクセスフル」→ success(成功)＋ful＝成功した。successfully(うまく)。succeed(成功する)" },
+  { word:"activity",    jp:"活動 / 活動内容",                 phonetic:"/ækˈtɪvɪti/", mnemonic:"「アクティビティ」→ アクティビティ＝活動。business activities(事業活動)。active(活発な)の名詞形" },
+  { word:"lead",        jp:"率いる / リード / 主導する",      phonetic:"/liːd/",      mnemonic:"「リード」→ lead the team(チームを率いる)。leader(リーダー)。take the lead(主導権を取る)" },
+  { word:"traffic",     jp:"交通 / 交通量",                   phonetic:"/ˈtræfɪk/",  mnemonic:"「トラフィック」→ traffic jam(渋滞)。traffic light(信号)。heavy traffic(交通渋滞)" },
+  { word:"actually",    jp:"実際には / 実は",                 phonetic:"/ˈæktʃuəli/", mnemonic:"「アクチュアリー」→ actual(実際の)＋ly＝実際には。Actually...(実は...)。the actual price(実際の値段)" },
+  { word:"follow",      jp:"従う / 後に続く / フォローする",  phonetic:"/ˈfɒləʊ/",   mnemonic:"「フォロー」→ follow the rules(規則に従う)。SNSでフォロー。following(次の・以下の)" },
+  { word:"inform",      jp:"知らせる / 伝える",               phonetic:"/ɪnˈfɔːrm/", mnemonic:"「インフォーム」→ information(情報)の動詞形。inform A of B(AにBを知らせる)" },
+  // p.221-230
+  { word:"prefer",      jp:"〜の方が好む",                    phonetic:"/prɪˈfɜːr/",  mnemonic:"「プリファー」→ I prefer coffee(コーヒーの方が好き)。preference(好み)。preferred(好まれる)" },
+  { word:"professional", jp:"プロの / 専門的な",              phonetic:"/prəˈfeʃənl/", mnemonic:"「プロフェッショナル」→ そのままプロフェッショナル。professional advice(専門的アドバイス)" },
+  { word:"improve",     jp:"改善する / 上達する",              phonetic:"/ɪmˈpruːv/", mnemonic:"「インプルーブ」→ improve your English(英語を上達させる)。improvement(改善)。make improvements" },
+  { word:"medical",     jp:"医療の / 医学の",                  phonetic:"/ˈmedɪkl/",  mnemonic:"「メディカル」→ medical check(健康診断)。medical treatment(治療)。medication(薬)" },
+  { word:"official",    jp:"公式の / 正式の / 役員",           phonetic:"/əˈfɪʃl/",   mnemonic:"「オフィシャル」→ official website(公式サイト)。official announcement(公式発表)" },
+  { word:"continue",    jp:"続ける / 続く",                    phonetic:"/kənˈtɪnjuː/", mnemonic:"「コンティニュー」→ ゲームのcontinue(続ける)。to be continued(続く)。continuous(継続的な)" },
+  { word:"total",       jp:"合計の / 全体の / 合計",           phonetic:"/ˈtəʊtl/",   mnemonic:"「トータル」→ total cost(総費用)。in total(合計で)。the total comes to 100(合計100)" },
+  { word:"branch",      jp:"支店 / 枝",                        phonetic:"/brɑːntʃ/",  mnemonic:"「ブランチ」→ branch office(支店)。tree branch(木の枝)。branch manager(支店長)" },
+  { word:"entrance",    jp:"入口 / 入学",                      phonetic:"/ˈentrəns/", mnemonic:"「エントランス」→ エントランス(入口)。entrance exam(入学試験)。front entrance(正面入口)" },
+  { word:"final",       jp:"最終の / 決勝 / 期末",             phonetic:"/ˈfaɪnl/",   mnemonic:"「ファイナル」→ final answer(最終回答)。final exam(期末試験)。finally(最終的に)" },
+  // p.231-240
+  { word:"fair",        jp:"見本市 / 公正な / フェア",          phonetic:"/feər/",      mnemonic:"「フェア」→ フェア(fair)＝見本市・展覧会。fair price(公正な価格)。job fair(就職フェア)" },
+  { word:"attention",   jp:"注意 / 注目",                      phonetic:"/əˈtenʃn/",  mnemonic:"「アテンション」→ Attention!(注目！)。pay attention to(〜に注意を払う)。attention to detail(細部への注意)" },
+  { word:"cleaning",    jp:"清掃 / クリーニング",               phonetic:"/ˈkliːnɪŋ/", mnemonic:"「クリーニング」→ cleaning service(清掃サービス)。dry cleaning(ドライクリーニング)。cleaning staff" },
+  { word:"expensive",   jp:"高価な / 費用がかかる",             phonetic:"/ɪkˈspensɪv/", mnemonic:"「エクスペンシブ」→ expense(費用)がいっぱい＝高い。too expensive(高すぎる)。inexpensive(安い)" },
+  { word:"seated",      jp:"着席した / 座っている",             phonetic:"/ˈsiːtɪd/",  mnemonic:"「シーテッド」→ seat(席)＋ed＝着席した。Please be seated(お座りください)。remain seated(座ったままで)" },
+  { word:"share",       jp:"共有する / 分ける / 株",            phonetic:"/ʃeər/",      mnemonic:"「シェア」→ share(シェア)する＝共有。market share(市場シェア)。share information(情報共有)" },
+  { word:"daily",       jp:"毎日の / 日常の",                   phonetic:"/ˈdeɪli/",   mnemonic:"「デイリー」→ daily news(日報)。daily routine(日課)。on a daily basis(毎日)" },
+  { word:"instead",     jp:"代わりに",                          phonetic:"/ɪnˈsted/",  mnemonic:"「インステッド」→ instead of(〜の代わりに)。I'll have tea instead(代わりにお茶にする)" },
+  { word:"national",    jp:"国の / 全国の",                     phonetic:"/ˈnæʃənl/",  mnemonic:"「ナショナル」→ ナショナルチーム＝国家代表。national holiday(祝日)。nationwide(全国的に)" },
+  { word:"perform",     jp:"行う / 実演する / 演じる",           phonetic:"/pəˈfɔːrm/", mnemonic:"「パフォーム」→ performance(パフォーマンス)。perform a task(作業を行う)。perform on stage(舞台で演じる)" },
+  // p.241-250
+  { word:"remove",      jp:"取り除く / 外す / 削除する",        phonetic:"/rɪˈmuːv/",  mnemonic:"「リムーブ」→ remove a file(ファイルを削除)。stain remover(染み抜き)。removal(除去)" },
+  { word:"suggest",     jp:"提案する / 示唆する",               phonetic:"/səˈdʒest/", mnemonic:"「サジェスト」→ suggestion(提案)。I suggest we meet(会いませんか)。suggest doing(〜することを提案)" },
+  { word:"direction",   jp:"方向 / 指示 / 道案内",              phonetic:"/dɪˈrekʃn/", mnemonic:"「ディレクション」→ give directions(道案内する)。in the direction of(〜の方向に)。director(監督)" },
+  { word:"express",     jp:"表現する / 急行の / 急行",          phonetic:"/ɪkˈspres/", mnemonic:"「エクスプレス」→ express train(急行電車)。express feelings(気持ちを表現)。expression(表現)" },
+  { word:"amount",      jp:"量 / 金額",                         phonetic:"/əˈmaʊnt/",  mnemonic:"「アマウント」→ a large amount of(大量の)。total amount(合計金額)。amount to(〜に達する)" },
+  { word:"personal",    jp:"個人的な / 個人の",                  phonetic:"/ˈpɜːrsənl/", mnemonic:"「パーソナル」→ personal computer(パソコン)。personal information(個人情報)。in person(直接)" },
+  { word:"publishing",  jp:"出版 / 出版業",                     phonetic:"/ˈpʌblɪʃɪŋ/", mnemonic:"「パブリッシング」→ publishing company(出版社)。publish(出版する)の名詞形。publishing industry" },
+  { word:"view",        jp:"眺め / 見解 / 見る",                phonetic:"/vjuː/",      mnemonic:"「ビュー」→ beautiful view(美しい眺め)。point of view(観点)。overview(概要)。review(批評)" },
+  { word:"wish",        jp:"望む / 願う / 願い",                 phonetic:"/wɪʃ/",      mnemonic:"「ウィッシュ」→ make a wish(お願いをする)。I wish I could(できたらいいのに)。best wishes(ご多幸を)" },
+  { word:"appear",      jp:"現れる / 〜に見える",               phonetic:"/əˈpɪər/",   mnemonic:"「アピア」→ appear on TV(テレビに出る)。appearance(外見・登場)。It appears that(〜のようだ)" },
+  // p.251-260
+  { word:"arrangement", jp:"手配 / 準備 / アレンジ",            phonetic:"/əˈreɪndʒmənt/", mnemonic:"「アレンジメント」→ travel arrangements(旅行の手配)。arrange(手配する)の名詞形" },
+  { word:"manage",      jp:"管理する / なんとかする",            phonetic:"/ˈmænɪdʒ/",  mnemonic:"「マネージ」→ manager(マネージャー)＝管理する人。I can manage(なんとかなる)。management(経営)" },
+  { word:"direct",      jp:"直行の / 指示する / 直接の",         phonetic:"/dɪˈrekt/",  mnemonic:"「ダイレクト」→ direct flight(直行便)。direct someone(人に指示する)。directly(直接に)" },
+  { word:"paid",        jp:"有給の / 支払い済みの",              phonetic:"/peɪd/",      mnemonic:"「ペイド」→ pay(払う)の過去形＝支払い済み。paid vacation(有給休暇)。paid leave(有給休暇)" },
+  { word:"agree",       jp:"同意する / 合意する",               phonetic:"/əˈɡriː/",   mnemonic:"「アグリー」→ I agree!(同意します！)。agreement(合意)。agree on(〜について合意する)" },
+  { word:"cause",       jp:"引き起こす / 原因",                  phonetic:"/kɔːz/",      mnemonic:"「コーズ」→ cause a problem(問題を引き起こす)。the cause of(〜の原因)。a good cause(善い目的)" },
+  { word:"damage",      jp:"ダメージ / 損傷 / 損害を与える",     phonetic:"/ˈdæmɪdʒ/",  mnemonic:"「ダメージ」→ damage(ダメージ)＝損害。damage control(損害対策)。goods were damaged(商品が損傷した)" },
+  { word:"raise",       jp:"上げる / お金を集める / 上昇",       phonetic:"/reɪz/",      mnemonic:"「レイズ」→ raise your hand(手を挙げる)。raise prices(値上げする)。raise concerns(懸念を示す)" },
+  { word:"respond",     jp:"返事をする / 応じる",               phonetic:"/rɪˈspɒnd/", mnemonic:"「リスポンド」→ response(返答)の動詞形。respond to an email(メールに返信)。respondent(回答者)" },
+  { word:"directly",    jp:"直接に",                            phonetic:"/dɪˈrektli/", mnemonic:"「ダイレクトリー」→ direct(直接)＋ly＝直接に。speak directly(直接話す)。contact directly(直接連絡)" },
+  // p.261-270
+  { word:"limited",     jp:"限られた / 限定的な",               phonetic:"/ˈlɪmɪtɪd/", mnemonic:"「リミテッド」→ limited time offer(期間限定オファー)。limit(制限)の形容詞形。limited edition(限定版)" },
+  { word:"packaging",   jp:"梱包 / パッケージ",                  phonetic:"/ˈpækɪdʒɪŋ/", mnemonic:"「パッケージング」→ packaging materials(梱包材)。packaging design(パッケージデザイン)" },
+  { word:"degree",      jp:"学位 / 程度 / 温度の度",             phonetic:"/dɪˈɡriː/",  mnemonic:"「ディグリー」→ a master's degree(修士号)。to a certain degree(ある程度)。Ph.D.(博士号)" },
+  { word:"further",     jp:"さらなる / さらに",                  phonetic:"/ˈfɜːrðər/", mnemonic:"「ファーザー」→ further information(さらなる情報)。look no further(もう探さなくていい)" },
+  { word:"quite",       jp:"かなり / 相当",                      phonetic:"/kwaɪt/",     mnemonic:"「クワイト」→ quite interesting(かなり面白い)。quite a few(かなりの数)。quite a lot(かなりたくさん)" },
+  { word:"regular",     jp:"通常の / 定期的な / 常連の",         phonetic:"/ˈreɡjələr/", mnemonic:"「レギュラー」→ regular customer(常連客)。regular hours(通常時間)。regularly(定期的に)" },
+  { word:"broadcast",   jp:"放送する / 放送",                    phonetic:"/ˈbrɔːdkɑːst/", mnemonic:"「ブロードキャスト」→ broadcast live(生放送する)。radio broadcast(ラジオ放送)" },
+  { word:"contain",     jp:"含む / 中に入っている",               phonetic:"/kənˈteɪn/", mnemonic:"「コンテイン」→ container(コンテナ)＝中に入れるもの。contain information(情報を含む)" },
+  { word:"experienced", jp:"経験豊富な",                         phonetic:"/ɪkˈspɪəriənst/", mnemonic:"「エクスペリエンスド」→ experience(経験)＋d＝経験豊富な。inexperienced(経験不足の)" },
+  { word:"fix",         jp:"直す / 固定する / 修理する",          phonetic:"/fɪks/",      mnemonic:"「フィックス」→ fix a problem(問題を解決)。fixed price(固定価格)。quick fix(応急処置)" },
+  // p.281-290
+  { word:"effort",      jp:"努力 / 尽力",                        phonetic:"/ˈefərt/",    mnemonic:"「エフォート」→ make an effort(努力する)。in an effort to do(〜しようとして)。without effort(楽に)" },
+  { word:"highly",      jp:"非常に / 高く",                      phonetic:"/ˈhaɪli/",    mnemonic:"「ハイリー」→ highly successful(非常に成功した)。speak highly of(〜を褒める)。highly recommend(強く勧める)" },
+  { word:"lower",       jp:"下げる / より低い",                   phonetic:"/ˈləʊər/",   mnemonic:"「ロウワー」→ lower prices(値下げする)。lower than usual(通常より低い)。Prices are lower now" },
+  { word:"reason",      jp:"理由 / 根拠",                        phonetic:"/ˈriːzn/",    mnemonic:"「リーズン」→ for this reason(この理由で)。reasonable(合理的)のベース。What's the reason?" },
+  { word:"similar",     jp:"似ている / 同様の",                   phonetic:"/ˈsɪmɪlər/", mnemonic:"「シミラー」→ similar to(〜に似ている)。similarity(類似点)。His ideas are similar to mine" },
+  { word:"fit",         jp:"合う / スペースに入る / 適している",  phonetic:"/fɪt/",       mnemonic:"「フィット」→ The clothes fit me(服が合う)。fit in(うまくやる)。fit for the job(その仕事に適した)" },
+  { word:"intended",    jp:"意図された / 向けられた",              phonetic:"/ɪnˈtendɪd/", mnemonic:"「インテンデッド」→ intend(〜するつもり)＋ed＝意図された。intended for(〜向けの)" },
+  { word:"invitation",  jp:"招待（状）",                          phonetic:"/ˌɪnvɪˈteɪʃn/", mnemonic:"「インビテーション」→ invitation card(招待状)。invite(招待する)の名詞形。send an invitation" },
+  { word:"patient",     jp:"患者 / 忍耐強い",                     phonetic:"/ˈpeɪʃnt/",  mnemonic:"「ペイシェント」→ be patient(辛抱する)。patient in hospital(入院患者)。patience(忍耐)" },
+  { word:"responsible", jp:"担当している / 責任がある",            phonetic:"/rɪˈspɒnsɪbl/", mnemonic:"「リスポンシブル」→ be responsible for(〜を担当)。responsibility(責任)。Who is responsible?" },
 ];
+
+// ===== USER AUTH (localStorage) =====
+function getUsers() { return JSON.parse(localStorage.getItem('gf_users') || '[]'); }
+function saveUsers(u) { localStorage.setItem('gf_users', JSON.stringify(u)); }
+function getCurrentUser() { return localStorage.getItem('gf_current_user') || null; }
+function setCurrentUser(u) { localStorage.setItem('gf_current_user', u); }
+
+// per-user keys
+function keyLearned(u) { return 'gf_learned_' + u; }
+function keyTries(u)   { return 'gf_tries_' + u; }
+function keyBest(u)    { return 'gf_best_' + u; }
+
+function getBestScores(u) {
+  return JSON.parse(localStorage.getItem(keyBest(u)) || '{}');
+}
+function saveBestScore(u, count, pct) {
+  const scores = getBestScores(u);
+  const key = count >= 9999 ? 'all' : String(count);
+  if (!scores[key] || pct > scores[key]) {
+    scores[key] = pct;
+    localStorage.setItem(keyBest(u), JSON.stringify(scores));
+  }
+}
+function getBestForCount(u, count) {
+  const scores = getBestScores(u);
+  const key = count >= 9999 ? 'all' : String(count);
+  return scores[key] || null;
+}
+
+function loadLearned() {
+  const u = getCurrentUser();
+  return new Set(JSON.parse(localStorage.getItem(keyLearned(u)) || '[]'));
+}
+function saveLearned(set) {
+  const u = getCurrentUser();
+  localStorage.setItem(keyLearned(u), JSON.stringify([...set]));
+}
 
 // ===== STATE =====
 let quizList = [], curQ = 0, score = 0, numQ = 20, answered = false;
 let flashList = [], flashIdx = 0, flashFlipped = false;
-let tries = parseInt(localStorage.getItem('gf_tries')||'0');
-let best  = localStorage.getItem('gf_best') || null;
-let learned = new Set(JSON.parse(localStorage.getItem('gf_learned')||'[]'));
+let learned = new Set();
 
-function saveLearned() {
-  localStorage.setItem('gf_learned', JSON.stringify([...learned]));
+// ===== AUTH UI =====
+function showLogin() {
+  document.getElementById('loginError').style.display = 'none';
+  show('loginScreen');
+}
+function showRegister() {
+  document.getElementById('regError').style.display = 'none';
+  show('registerScreen');
+}
+
+let pendingAvatar = null;
+function previewAvatar(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    pendingAvatar = e.target.result;
+    const el = document.getElementById('regAvatarPreview');
+    el.innerHTML = '<img src="' + pendingAvatar + '">';
+  };
+  reader.readAsDataURL(file);
+}
+
+function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  if (!username || !password) { showErr(errEl, 'ユーザー名とパスワードを入力してください'); return; }
+  const users = getUsers();
+  const user = users.find(u => u.username === username && u.password === password);
+  if (!user) { showErr(errEl, 'ユーザー名またはパスワードが違います'); return; }
+  setCurrentUser(username);
+  enterApp();
+}
+
+function doRegister() {
+  const username = document.getElementById('regUser').value.trim();
+  const password = document.getElementById('regPass').value;
+  const password2 = document.getElementById('regPass2').value;
+  const errEl = document.getElementById('regError');
+  if (!username || !password) { showErr(errEl, 'ユーザー名とパスワードを入力してください'); return; }
+  if (password !== password2) { showErr(errEl, 'パスワードが一致しません'); return; }
+  if (password.length < 4) { showErr(errEl, 'パスワードは4文字以上にしてください'); return; }
+  const users = getUsers();
+  if (users.find(u => u.username === username)) { showErr(errEl, 'そのユーザー名はすでに使われています'); return; }
+  users.push({ username, password, avatar: pendingAvatar || null });
+  saveUsers(users);
+  setCurrentUser(username);
+  enterApp();
+}
+
+function doLogout() {
+  localStorage.removeItem('gf_current_user');
+  learned = new Set();
+  pendingAvatar = null;
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  show('loginScreen');
+}
+
+function showErr(el, msg) {
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function enterApp() {
+  learned = loadLearned();
+  const username = getCurrentUser();
+  const users = getUsers();
+  const user = users.find(u => u.username === username);
+  // set user bar
+  document.getElementById('homeUserName').textContent = username;
+  const avatarEl = document.getElementById('homeAvatar');
+  if (user && user.avatar) {
+    avatarEl.innerHTML = '<img src="' + user.avatar + '">';
+  } else {
+    avatarEl.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="#a09aac"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>';
+  }
+  show('homeScreen');
+  init();
 }
 
 // ===== INIT =====
 function init() {
+  const u = getCurrentUser();
+  const best = getBestForCount(u, numQ);
   document.getElementById('statWords').textContent = VOCAB.length;
   document.getElementById('statLearned').textContent = learned.size;
   document.getElementById('statBest').textContent = best ? best + '%' : '—';
@@ -868,6 +1271,7 @@ function setCount(n, el) {
   numQ = n;
   document.querySelectorAll('.count-opt').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
+  init(); // update best score for this count
 }
 
 // ===== SCREENS =====
@@ -882,14 +1286,8 @@ function shuffle(arr) { return [...arr].sort(()=>Math.random()-0.5); }
 
 function startQuiz(unlearnedOnly) {
   let pool = unlearnedOnly ? VOCAB.filter(v => !learned.has(v.word)) : VOCAB;
-  if (pool.length === 0) {
-    alert('未習得の単語がありません。全単語が覚えた済みです！');
-    return;
-  }
-  if (pool.length < 4) {
-    alert('未習得の単語が少なすぎます（最低4語必要）。');
-    return;
-  }
+  if (pool.length === 0) { alert('未習得の単語がありません！'); return; }
+  if (pool.length < 4) { alert('未習得の単語が少なすぎます（最低4語必要）。'); return; }
   quizList = shuffle(pool).slice(0, Math.min(numQ, pool.length));
   curQ = 0; score = 0; answered = false;
   show('quizScreen');
@@ -906,7 +1304,6 @@ function renderQ() {
   document.getElementById('scoreChip').textContent = score + ' / ' + curQ;
   document.getElementById('feedCard').classList.remove('visible');
   document.getElementById('nextBtn').style.display = 'none';
-
   const wrong = shuffle(VOCAB.filter(v=>v.word!==q.word)).slice(0,3);
   const opts = shuffle([q, ...wrong]);
   const el = document.getElementById('choices');
@@ -930,9 +1327,7 @@ function pick(btn, correct, q) {
     document.getElementById('feedLabel').textContent = '正解！';
   } else {
     btn.classList.add('wrong');
-    document.querySelectorAll('.choice-btn').forEach(b => {
-      if (b.textContent === q.jp) b.classList.add('correct');
-    });
+    document.querySelectorAll('.choice-btn').forEach(b => { if (b.textContent === q.jp) b.classList.add('correct'); });
     document.getElementById('feedLabel').className = 'feedback-label ng';
     document.getElementById('feedLabel').textContent = '不正解... 正解：' + q.jp;
   }
@@ -948,25 +1343,23 @@ function nextQ() {
   if (curQ >= quizList.length) showResult();
   else renderQ();
 }
-
 function speakCurrent() { speak(document.getElementById('qWord').textContent); }
 
 // ===== RESULT =====
 function showResult() {
-  tries++;
-  localStorage.setItem('gf_tries', tries);
+  const u = getCurrentUser();
   const pct = Math.round(score / quizList.length * 100);
-  if (!best || pct > parseInt(best)) { best = pct; localStorage.setItem('gf_best', pct); }
+  saveBestScore(u, numQ, pct);
+  const tries = parseInt(localStorage.getItem(keyTries(u)) || '0') + 1;
+  localStorage.setItem(keyTries(u), tries);
 
   document.getElementById('rScore').textContent = score;
   document.getElementById('rDenom').textContent = '/ ' + quizList.length + '問正解';
-
   let grade, msg, cls;
   if (pct >= 90) { grade='S'; msg='完璧！さすがすぎる！'; cls='s'; launchConfetti(); }
   else if (pct >= 70) { grade='A'; msg='かなりいい感じ！もう少し！'; cls='a'; }
   else if (pct >= 50) { grade='B'; msg='半分クリア！語呂合わせで復習しよう'; cls='b'; }
   else              { grade='C'; msg='単語帳で見直してから再挑戦！'; cls='c'; }
-
   const pctEl = document.getElementById('rPct');
   pctEl.textContent = grade + ' ランク — ' + pct + '%';
   pctEl.className = 'result-pct ' + cls;
@@ -977,21 +1370,13 @@ function showResult() {
 // ===== FLASHCARD =====
 function startFlash(unlearnedOnly) {
   let pool = unlearnedOnly ? VOCAB.filter(v => !learned.has(v.word)) : VOCAB;
-  if (pool.length === 0) {
-    alert('未習得の単語がありません。全単語が覚えた済みです！');
-    return;
-  }
+  if (pool.length === 0) { alert('未習得の単語がありません！'); return; }
   flashList = [...pool];
   flashIdx = 0;
   show('flashScreen');
   renderFlash();
 }
-
-function shuffleFlash() {
-  flashList = shuffle(flashList);
-  flashIdx = 0;
-  renderFlash();
-}
+function shuffleFlash() { flashList = shuffle(flashList); flashIdx = 0; renderFlash(); }
 
 function renderFlash() {
   const v = flashList[flashIdx];
@@ -1004,7 +1389,6 @@ function renderFlash() {
   document.getElementById('flashPhonetic').style.display = '';
   document.getElementById('flashHint').textContent = 'タップで意味を表示';
   document.getElementById('flashMnemonic').textContent = v.mnemonic;
-  // Update learned button state
   const isLearned = learned.has(v.word);
   const btn = document.getElementById('learnedBtn');
   const badge = document.getElementById('flashLearnedBadge');
@@ -1017,71 +1401,46 @@ function renderFlash() {
 
 function toggleLearned() {
   const v = flashList[flashIdx];
-  if (learned.has(v.word)) {
-    learned.delete(v.word);
-  } else {
-    learned.add(v.word);
-  }
-  saveLearned();
+  if (learned.has(v.word)) learned.delete(v.word);
+  else learned.add(v.word);
+  saveLearned(learned);
   renderFlash();
+  document.getElementById('statLearned').textContent = learned.size;
 }
 
 function flipCard() {
-  const v = flashList[flashIdx];
   if (!flashFlipped) {
     flashFlipped = true;
     document.getElementById('flashMeaning').style.display = 'block';
     document.getElementById('flashPhonetic').style.display = 'none';
     document.getElementById('flashHint').textContent = 'タップで単語に戻す';
-  } else {
-    renderFlash();
-  }
+  } else { renderFlash(); }
 }
-
-function flashPrev() {
-  flashIdx = (flashIdx - 1 + flashList.length) % flashList.length;
-  renderFlash();
-}
-function flashNext() {
-  flashIdx = (flashIdx + 1) % flashList.length;
-  renderFlash();
-}
+function flashPrev() { flashIdx = (flashIdx - 1 + flashList.length) % flashList.length; renderFlash(); }
+function flashNext() { flashIdx = (flashIdx + 1) % flashList.length; renderFlash(); }
 function speakFlash() { speak(flashList[flashIdx].word); }
 
 // ===== SPEECH =====
-// 起動時に音声を先読みしておく
 if ('speechSynthesis' in window) {
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 }
-
 function speak(word) {
-  if (!('speechSynthesis' in window)) {
-    alert('このブラウザは発音機能に対応していません');
-    return;
-  }
+  if (!('speechSynthesis' in window)) { alert('このブラウザは発音機能に対応していません'); return; }
   window.speechSynthesis.cancel();
-
   function doSpeak() {
     const u = new SpeechSynthesisUtterance(word);
-    u.lang = 'en-US';
-    u.rate = 0.85;
-    u.pitch = 1;
+    u.lang = 'en-US'; u.rate = 0.85; u.pitch = 1;
     const voices = window.speechSynthesis.getVoices();
     const en = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
     if (en) u.voice = en;
     window.speechSynthesis.speak(u);
   }
-
   const voices = window.speechSynthesis.getVoices();
-  if (voices.length > 0) {
-    doSpeak();
-  } else {
-    window.speechSynthesis.onvoiceschanged = () => {
-      window.speechSynthesis.onvoiceschanged = null;
-      doSpeak();
-    };
-    setTimeout(doSpeak, 300); // フォールバック
+  if (voices.length > 0) doSpeak();
+  else {
+    window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.onvoiceschanged = null; doSpeak(); };
+    setTimeout(doSpeak, 300);
   }
 }
 
@@ -1105,7 +1464,16 @@ function launchConfetti() {
   }
 }
 
-init();
+// ===== BOOT =====
+(function() {
+  const u = getCurrentUser();
+  if (u) {
+    learned = loadLearned();
+    enterApp();
+  } else {
+    show('loginScreen');
+  }
+})();
 </script>
 </body>
 </html>
