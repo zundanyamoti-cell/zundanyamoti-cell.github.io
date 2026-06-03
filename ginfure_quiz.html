@@ -677,6 +677,124 @@ body {
 
 /* hidden file input */
 #avatarInput { display: none; }
+
+/* ===== SEARCH ===== */
+.search-topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0 12px;
+}
+.search-input-wrap {
+  width: 100%;
+  position: relative;
+  margin-bottom: 14px;
+}
+.search-input {
+  width: 100%;
+  padding: 14px 46px 14px 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s;
+  box-shadow: var(--card-shadow);
+}
+.search-input:focus { border-color: var(--lavender); }
+.search-clear {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 1.1rem;
+  padding: 4px;
+  display: none;
+}
+.search-hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-top: 40px;
+}
+.search-results {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.search-result-card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.search-result-card:active { transform: scale(0.98); border-color: var(--lavender); }
+.sr-top {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.sr-word {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--text);
+}
+.sr-phonetic {
+  font-size: 0.75rem;
+  color: #ccc;
+  font-family: serif;
+}
+.sr-jp {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--lavender);
+  margin-bottom: 8px;
+}
+.sr-mnemonic {
+  font-size: 0.78rem;
+  color: #7a6a80;
+  line-height: 1.5;
+  background: var(--amber-light);
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+.sr-open-btn {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--lavender);
+  background: var(--lavender-light);
+  border: 1px solid #d8d0ee;
+  border-radius: 99px;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+.no-results {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin-top: 30px;
+}
+.search-count {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-weight: 700;
+}
 </style>
 </head>
 <body>
@@ -800,6 +918,16 @@ body {
         <span class="btn-desc">覚えた済み以外の単語を表示</span>
       </div>
     </button>
+
+    <button class="mode-btn" style="border-color:#c8d8ee;background:#f0f6ff;" onclick="showSearch()">
+      <div class="btn-icon" style="background:#e0ecff;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a7ab8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <div class="btn-text">
+        <span class="btn-title">単語を検索</span>
+        <span class="btn-desc">英語・日本語で単語を調べる</span>
+      </div>
+    </button>
   </div>
 </div>
 
@@ -868,6 +996,23 @@ body {
     <button class="nav-btn" onclick="flashPrev()">← 前</button>
     <button class="nav-btn center" onclick="speakFlash()">発音</button>
     <button class="nav-btn" onclick="flashNext()">次 →</button>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="screen" id="searchScreen">
+  <div class="search-topbar">
+    <button class="back-btn" onclick="goHome()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div style="font-size:0.95rem;font-weight:800;color:var(--text);">単語検索</div>
+  </div>
+  <div class="search-input-wrap">
+    <input class="search-input" id="searchInput" type="text" placeholder="英語または日本語で検索..." oninput="doSearch(this.value)" autocomplete="off">
+    <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+  </div>
+  <div id="searchResults">
+    <div class="search-hint">英語（例：match）または日本語（例：一致）で検索</div>
   </div>
 </div>
 
@@ -1147,6 +1292,61 @@ const VOCAB = [
   { word:"especially",  jp:"特に / 特別に",              phonetic:"/ɪˈspeʃəli/",  mnemonic:"「エスペシャリー」→ especially important(特に重要)。particularly(特に)と同義。special(特別)の副詞形" },
   { word:"period",      jp:"期間 / 時代",               phonetic:"/ˈpɪəriəd/",   mnemonic:"「ピリオド」→ a short period(短期間)。periodical(定期刊行物)。periodically(定期的に)" },
   { word:"professor",   jp:"教授 / 大学の先生",           phonetic:"/prəˈfesər/",  mnemonic:"「プロフェッサー」→ university professor(大学教授)。faculty(大学の教員)。Prof.(教授の略)" },
+  // p.11-20
+  { word:"arrive",    jp:"到着する / 着く",              phonetic:"/əˈraɪv/",      mnemonic:"「アライブ」→ arrive at(〜に到着する)。arrival(到着)の動詞形。The train arrived on time" },
+  { word:"hold",      jp:"開催する / 持つ / 保つ",        phonetic:"/həʊld/",       mnemonic:"「ホールド」→ hold an event(イベントを開催)。hold a meeting(会議を開く)。on hold(保留中)" },
+  { word:"return",    jp:"帰る / 返す / 戻る",            phonetic:"/rɪˈtɜːrn/",   mnemonic:"「リターン」→ return trip(帰りの旅)。return a book(本を返す)。in return(お返しに)" },
+  { word:"opening",   jp:"開店 / 開会 / 空き",            phonetic:"/ˈəʊpənɪŋ/",  mnemonic:"「オープニング」→ the opening of a store(開店)。opening ceremony(開会式)。job opening(求人)" },
+  { word:"soon",      jp:"すぐに / まもなく",              phonetic:"/suːn/",        mnemonic:"「スーン」→ see you soon(またすぐに！)。as soon as possible(できるだけ早く)。sooner or later(遅かれ早かれ)" },
+  { word:"sign",      jp:"署名する / 標識 / サイン",       phonetic:"/saɪn/",        mnemonic:"「サイン」→ サインをもらう＝sign(署名する)。sign a contract(契約書にサイン)。sign up(登録する)" },
+  { word:"able",      jp:"できる / 能力がある",             phonetic:"/ˈeɪbl/",      mnemonic:"「エイブル」→ be able to do(〜できる)。able worker(有能な社員)。enable(可能にする)" },
+  { word:"few",       jp:"少しの / わずかの",              phonetic:"/fjuː/",        mnemonic:"「フュー」→ a few(少しの)。in a few minutes(数分後に)。few people(ほとんど人がいない)" },
+  { word:"pay",       jp:"支払う / 給料",                  phonetic:"/peɪ/",         mnemonic:"「ペイ」→ pay the bill(支払う)。payment(支払い)。paycheck(給料)。pay attention(注意する)" },
+  { word:"trip",      jp:"旅行 / 出張",                   phonetic:"/trɪp/",        mnemonic:"「トリップ」→ business trip(出張)。take a trip(旅行する)。round trip(往復旅行)" },
+  // p.51-60
+  { word:"ago",       jp:"〜前に",                        phonetic:"/əˈɡəʊ/",      mnemonic:"「アゴ」→ four years ago(4年前)。long ago(昔)。a while ago(少し前)。just a moment ago(さっき)" },
+  { word:"finish",    jp:"終わる / 終える",                phonetic:"/ˈfɪnɪʃ/",    mnemonic:"「フィニッシュ」→ finish line(ゴール)。finish work(仕事を終える)。Have you finished?(終わった？)" },
+  { word:"hope",      jp:"希望する / 望む / 希望",         phonetic:"/həʊp/",        mnemonic:"「ホープ」→ I hope so(そうであればいいのですが)。hope for(〜を希望する)。hopeful(希望に満ちた)" },
+  { word:"part",      jp:"参加する / 部分 / 部品",         phonetic:"/pɑːrt/",       mnemonic:"「パート」→ take part in(〜に参加する)。part-time(パートタイム)。spare parts(交換部品)" },
+  { word:"important", jp:"重要な / 大切な",                phonetic:"/ɪmˈpɔːrtnt/", mnemonic:"「インポータント」→ important meeting(重要な会議)。importance(重要性)。most importantly(最も重要なことに)" },
+  { word:"mail",      jp:"郵送する / メール / 郵便",       phonetic:"/meɪl/",        mnemonic:"「メール」→ mail a coupon(クーポンを郵送)。by mail(郵便で)。email(電子メール)" },
+  { word:"once",      jp:"一度 / かつて / 〜したらすぐ",   phonetic:"/wʌns/",        mnemonic:"「ワンス」→ once a week(週1回)。once upon a time(昔々)。at once(すぐに・一度に)" },
+  { word:"run",       jp:"経営する / 続く / 走る",         phonetic:"/rʌn/",         mnemonic:"「ラン」→ run a business(会社を経営する)。run until December(12月まで続く)。run out(なくなる)" },
+  { word:"bring",     jp:"持参する / 連れてくる",           phonetic:"/brɪŋ/",        mnemonic:"「ブリング」→ bring an umbrella(傘を持参)。bring children(子供を連れてくる)。bring about(引き起こす)" },
+  { word:"place",     jp:"注文する / 置く / 場所",         phonetic:"/pleɪs/",       mnemonic:"「プレイス」→ place an order(注文する)。place an advertisement(広告を出す)。in place(所定の場所に)" },
+  // p.71-80
+  { word:"decide",    jp:"決める / 決定する",              phonetic:"/dɪˈsaɪd/",    mnemonic:"「ディサイド」→ decision(決定)の動詞形。decide to do(〜することを決める)。make a decision(決断する)" },
+  { word:"plant",     jp:"植物 / 工場 / 植える",           phonetic:"/plɑːnt/",      mnemonic:"「プラント」→ plant(植物・工場)。water plants(植物に水をやる)。power plant(発電所)" },
+  { word:"pleased",   jp:"喜んでいる / 満足している",      phonetic:"/pliːzd/",      mnemonic:"「プリーズド」→ pleased to meet you(お会いできて光栄)。I'm pleased(嬉しい)。please(喜ばせる)の形容詞" },
+  { word:"enough",    jp:"十分な / 十分に",                phonetic:"/ɪˈnʌf/",      mnemonic:"「イナフ」→ not big enough(十分に大きくない)。good enough(十分)。enough time(十分な時間)" },
+  { word:"film",      jp:"映画 / フィルム / 撮影する",     phonetic:"/fɪlm/",        mnemonic:"「フィルム」→ see a film(映画を見る)。film festival(映画祭)。documentary film(ドキュメンタリー)" },
+  { word:"case",      jp:"場合 / ケース / 事例",           phonetic:"/keɪs/",        mnemonic:"「ケース」→ in that case(その場合は)。just in case(念のため)。in case of(〜の場合に備えて)" },
+  { word:"meal",      jp:"食事 / 一食",                    phonetic:"/miːl/",        mnemonic:"「ミール」→ have a meal(食事をする)。meal time(食事時間)。Breakfast/Lunch/Dinner は3つのmeal" },
+  { word:"someone",   jp:"誰か / ある人",                  phonetic:"/ˈsʌmwʌn/",    mnemonic:"「サムワン」→ some(ある)＋one(人)＝誰か。someone else(他の誰か)。Is someone there?(誰かいますか？)" },
+  { word:"always",    jp:"いつも / 常に",                  phonetic:"/ˈɔːlweɪz/",   mnemonic:"「オールウェイズ」→ always late(いつも遅刻)。almost always(ほぼいつも)。always on time(いつも時間通り)" },
+  { word:"piece",     jp:"1枚 / 1個 / 一部",              phonetic:"/piːs/",        mnemonic:"「ピース」→ a piece of paper(1枚の紙)。a piece of music(1曲)。in one piece(無事に)" },
+  // p.101-110
+  { word:"map",       jp:"地図",                           phonetic:"/mæp/",         mnemonic:"「マップ」→ road map(道路地図)。street map(市街地図)。map out a plan(計画を立てる)" },
+  { word:"ride",      jp:"乗る / 乗り物",                  phonetic:"/raɪd/",        mnemonic:"「ライド」→ ride a bicycle(自転車に乗る)。ride home(家まで乗せてもらう)。a quick ride(すぐ着く距離)" },
+  { word:"almost",    jp:"ほとんど / もう少しで",           phonetic:"/ˈɔːlməʊst/",  mnemonic:"「オールモスト」→ almost done(もうすぐ完了)。almost always(ほぼいつも)。almost there(もう少し！)" },
+  { word:"goods",     jp:"商品 / 物品",                    phonetic:"/ɡʊdz/",        mnemonic:"「グッズ」→ sporting goods(スポーツ用品)。goods and services(物品とサービス)。ship goods(商品を発送)" },
+  { word:"quickly",   jp:"すばやく / 急いで",              phonetic:"/ˈkwɪkli/",    mnemonic:"「クイックリー」→ quick(速い)＋ly＝すばやく。finish quickly(さっさと終える)。a quick meeting" },
+  { word:"wide",      jp:"幅広い / 広い",                  phonetic:"/waɪd/",        mnemonic:"「ワイド」→ wide screen(ワイドスクリーン)。how wide(幅はどれくらい)。worldwide(世界中で)" },
+  { word:"famous",    jp:"有名な",                         phonetic:"/ˈfeɪməs/",    mnemonic:"「フェイマス」→ a famous figure(著名人)。world-famous(世界的に有名)。well-known(有名)とも言う" },
+  { word:"power",     jp:"電力 / 力 / 権力",               phonetic:"/ˈpaʊər/",     mnemonic:"「パワー」→ power failure(停電)。without power(電気なし)。power plant(発電所)。パワフル！" },
+  { word:"book",      jp:"予約する / 本",                  phonetic:"/bʊk/",         mnemonic:"「ブック」→ book a hotel(ホテルを予約する)。booking(予約)。make a booking(予約する)" },
+  { word:"wrong",     jp:"間違った / 誤った",              phonetic:"/rɒŋ/",         mnemonic:"「ロング」じゃなく「ロング」→ wrong(間違い)。go wrong(うまくいかない)。What's wrong?(どうしたの？)" },
+  // p.121-130
+  { word:"glad",      jp:"うれしい / 喜んでいる",          phonetic:"/ɡlæd/",        mnemonic:"「グラッド」→ glad to hear(聞けて嬉しい)。I'm glad that(〜で嬉しい)。gladly(喜んで)" },
+  { word:"warm",      jp:"温かい / 暖かい",                phonetic:"/wɔːrm/",      mnemonic:"「ウォーム」→ warm welcome(温かい歓迎)。warm atmosphere(温かい雰囲気)。global warming(温暖化)" },
+  { word:"matter",    jp:"問題 / 重要である / 件",          phonetic:"/ˈmætər/",     mnemonic:"「マター」→ What's the matter?(どうしたの？)。it doesn't matter(関係ない)。as a matter of fact(実は)" },
+  { word:"useful",    jp:"役立つ / 有益な",                phonetic:"/ˈjuːsfəl/",   mnemonic:"「ユースフル」→ helpful/informative(役立つ・有益)。useful information(有益な情報)。make good use of(活用する)" },
+  { word:"refer",     jp:"参照する / 言及する",             phonetic:"/rɪˈfɜːr/",    mnemonic:"「リファー」→ refer to(〜を参照する)。reference(参考資料)。refer to the manual(マニュアルを参照)" },
+  { word:"safe",      jp:"安全な / 安全",                  phonetic:"/seɪf/",        mnemonic:"「セーフ」→ safe area(安全な地区)。read safety rules(安全規則を読む)。safe and sound(無事に)" },
+  { word:"simple",    jp:"シンプルな / 簡単な",             phonetic:"/ˈsɪmpl/",     mnemonic:"「シンプル」→ keep it simple(シンプルに保つ)。simplify(簡素化する)。simple task(簡単な作業)" },
+  { word:"discover",  jp:"発見する / 気づく",              phonetic:"/dɪˈskʌvər/",  mnemonic:"「ディスカバー」→ discover a mistake(誤りを発見)。discovery(発見)。discover a new talent(才能を発見)" },
+  { word:"park",      jp:"駐車する / 公園",                phonetic:"/pɑːrk/",       mnemonic:"「パーク」→ parking lot(駐車場)。park a car(車を駐車)。parking permit(駐車許可証)" },
+  { word:"promise",   jp:"約束する / 約束",                phonetic:"/ˈprɒmɪs/",    mnemonic:"「プロミス」→ promise to do(〜することを約束する)。keep a promise(約束を守る)。promising(将来有望な)" },
   // p.281-290
   { word:"effort",      jp:"努力 / 尽力",                        phonetic:"/ˈefərt/",    mnemonic:"「エフォート」→ make an effort(努力する)。in an effort to do(〜しようとして)。without effort(楽に)" },
   { word:"highly",      jp:"非常に / 高く",                      phonetic:"/ˈhaɪli/",    mnemonic:"「ハイリー」→ highly successful(非常に成功した)。speak highly of(〜を褒める)。highly recommend(強く勧める)" },
@@ -1158,6 +1358,116 @@ const VOCAB = [
   { word:"invitation",  jp:"招待（状）",                          phonetic:"/ˌɪnvɪˈteɪʃn/", mnemonic:"「インビテーション」→ invitation card(招待状)。invite(招待する)の名詞形。send an invitation" },
   { word:"patient",     jp:"患者 / 忍耐強い",                     phonetic:"/ˈpeɪʃnt/",  mnemonic:"「ペイシェント」→ be patient(辛抱する)。patient in hospital(入院患者)。patience(忍耐)" },
   { word:"responsible", jp:"担当している / 責任がある",            phonetic:"/rɪˈspɒnsɪbl/", mnemonic:"「リスポンシブル」→ be responsible for(〜を担当)。responsibility(責任)。Who is responsible?" },
+  // p.1-10
+  { word:"begin",      jp:"始まる / 始める",                     phonetic:"/bɪˈɡɪn/",        mnemonic:"「ビギン」→ begin a meeting(会議を始める)。beginner(初心者)。to begin with(まず最初に)" },
+  { word:"work",       jp:"働く / 作動する / 仕事",               phonetic:"/wɜːrk/",         mnemonic:"「ワーク」→ work overtime(残業する)。work out(うまくいく)。homework(宿題)" },
+  { word:"company",    jp:"会社 / 仲間",                         phonetic:"/ˈkʌmpəni/",      mnemonic:"「カンパニー」→ company policy(会社方針)。keep someone company(付き合う)。a software company(ソフト会社)" },
+  { word:"order",      jp:"注文する / 命令 / 順序",               phonetic:"/ˈɔːrdər/",       mnemonic:"「オーダー」→ place an order(注文する)。in order to(〜するために)。order food(食べ物を注文する)" },
+  { word:"employee",   jp:"従業員 / 社員",                       phonetic:"/ɪmˈplɔɪiː/",     mnemonic:"「エンプロイー」→ employ(雇う)＋ee(される人)＝従業員。employer(雇用者)の反対" },
+  { word:"information",jp:"情報 / 案内",                         phonetic:"/ˌɪnfəˈmeɪʃn/",  mnemonic:"「インフォメーション」→ そのままインフォメーション＝情報。inform(知らせる)の名詞形" },
+  { word:"receive",    jp:"受け取る / 受信する",                  phonetic:"/rɪˈsiːv/",       mnemonic:"「リシーブ」→ バレーのレシーブ(receive)＝受け取る。receipt(領収書)と関連" },
+  { word:"last",       jp:"最後の / 続く / 先〜の",               phonetic:"/lɑːst/",         mnemonic:"「ラスト」→ last week(先週)。last for 3 years(3年続く)。at last(ついに)" },
+  { word:"need",       jp:"必要とする / 必要",                    phonetic:"/niːd/",          mnemonic:"「ニード」→ I need help(助けが必要)。need to do(〜しなければならない)。in need(困っている)" },
+  { word:"travel",     jp:"旅行する / 移動する",                  phonetic:"/ˈtrævl/",        mnemonic:"「トラベル」→ travel abroad(海外旅行)。business travel(出張)。traveler(旅行者)" },
+  // p.11-20
+  { word:"job",        jp:"仕事 / 職",                           phonetic:"/dʒɒb/",          mnemonic:"「ジョブ」→ job(仕事)はそのまま日本語でも使う。job offer(求人)。look for a job(仕事を探す)" },
+  { word:"find",       jp:"見つける / 気づく",                    phonetic:"/faɪnd/",         mnemonic:"「ファインド」→ find a solution(解決策を見つける)。find out(判明する)。findings(調査結果)" },
+  { word:"department", jp:"部署 / 部門 / 売り場",                 phonetic:"/dɪˈpɑːrtmənt/",  mnemonic:"「デパートメント」→ デパート(department store)の各売り場＝部門" },
+  { word:"let",        jp:"させる / 〜してもらう",                 phonetic:"/let/",           mnemonic:"「レット」→ Let me know(知らせて)。let someone do(〜させる)。Let's(〜しよう)" },
+  { word:"visit",      jp:"訪問する / 訪れる",                    phonetic:"/ˈvɪzɪt/",        mnemonic:"「ビジット」→ visit a client(客先を訪問)。visitor(訪問者)。pay a visit(訪問する)" },
+  { word:"also",       jp:"また / さらに / 〜も",                 phonetic:"/ˈɔːlsəʊ/",      mnemonic:"「オールソー」→ also(また・さらに)＝too/as wellと同義。I also agree(私も同意)" },
+  { word:"sure",       jp:"確かな / きっと",                      phonetic:"/ʃʊər/",          mnemonic:"「シュア」→ Make sure(確認する)。Sure!(もちろん！)。for sure(確かに)" },
+  { word:"leave",      jp:"去る / 残す / 休暇",                   phonetic:"/liːv/",          mnemonic:"「リーブ」→ leave the office(オフィスを去る)。paid leave(有給休暇)。leave a message(メッセージを残す)" },
+  { word:"sales",      jp:"販売 / 売上 / セール",                  phonetic:"/seɪlz/",         mnemonic:"「セールス」→ sales department(営業部)。on sale(セール中)。sales figures(売上数字)" },
+  { word:"move",       jp:"動く / 引っ越す / 移動する",            phonetic:"/muːv/",          mnemonic:"「ムーブ」→ move to a new office(新オフィスに引っ越す)。moving company(引越し業者)" },
+  // p.21-30
+  { word:"sell",       jp:"売る / 販売する",                      phonetic:"/sel/",           mnemonic:"「セル」→ sell products(製品を売る)。best seller(ベストセラー)。on sale(販売中)" },
+  { word:"several",    jp:"いくつかの / 数人の",                  phonetic:"/ˈsevrəl/",       mnemonic:"「セブラル」→ several times(数回)。several countries(数カ国)。for several years(数年間)" },
+  { word:"hear",       jp:"聞こえる / 耳にする",                   phonetic:"/hɪər/",          mnemonic:"「ヒア」→ hear from(〜から連絡がある)。hear about(〜について聞く)。I heard that(〜と聞いた)" },
+  { word:"still",      jp:"まだ / 静かな / それでも",              phonetic:"/stɪl/",          mnemonic:"「スティル」→ still working(まだ働いている)。stand still(静止する)。still water(静かな水)" },
+  { word:"later",      jp:"後で / 後の",                          phonetic:"/ˈleɪtər/",       mnemonic:"「レイター」→ see you later(またね)。later that day(その日後で)。no later than(〜までに)" },
+  { word:"different",  jp:"異なる / 違う",                        phonetic:"/ˈdɪfrənt/",      mnemonic:"「ディファレント」→ difference(違い)の形容詞形。different from(〜と異なる)。make a difference(違いをもたらす)" },
+  { word:"close",      jp:"閉める / 近い / 締め切る",              phonetic:"/kləʊz/",         mnemonic:"「クローズ」→ close the door(ドアを閉める)。close to(〜に近い)。closing time(閉店時間)" },
+  { word:"stay",       jp:"滞在する / 留まる",                     phonetic:"/steɪ/",          mnemonic:"「ステイ」→ stay at a hotel(ホテルに泊まる)。stay late(遅くまで残る)。homestay(ホームステイ)" },
+  { word:"already",    jp:"すでに / もう",                         phonetic:"/ɔːlˈredi/",      mnemonic:"「オールレディ」→ already finished(もう終わった)。already done(すでに完了)。I already know(もう知ってる)" },
+  { word:"present",    jp:"現在の / 出席している / プレゼント",     phonetic:"/ˈpreznt/",       mnemonic:"「プレゼント」→ プレゼント(贈り物)もpresent。present at the meeting(会議に出席)。at present(現在)" },
+  // p.31-40
+  { word:"become",     jp:"なる / 〜になる",                       phonetic:"/bɪˈkʌm/",        mnemonic:"「ビカム」→ become famous(有名になる)。become a doctor(医者になる)。become available(利用可能になる)" },
+  { word:"ready",      jp:"準備ができた / 用意ができた",            phonetic:"/ˈredi/",         mnemonic:"「レディ」→ Are you ready?(準備できてる？)。get ready(準備する)。ready to go(出発準備OK)" },
+  { word:"closed",     jp:"閉まっている / 休業中",                  phonetic:"/kləʊzd/",        mnemonic:"「クローズド」→ The store is closed(店が閉まっている)。closed on weekends(週末休業)。closure(閉鎖)" },
+  { word:"enter",      jp:"入る / 入力する",                       phonetic:"/ˈentər/",        mnemonic:"「エンター」→ enter the room(部屋に入る)。enter a contest(コンテストに参加)。entry(入場)" },
+  { word:"happen",     jp:"起こる / 生じる",                       phonetic:"/ˈhæpən/",        mnemonic:"「ハプン」→ What happened?(何が起きたの？)。happen to(たまたま〜する)。as it happens(実は)" },
+  { word:"customer",   jp:"客 / 顧客",                            phonetic:"/ˈkʌstəmər/",     mnemonic:"「カスタマー」→ カスタマーサービス(customer service)。regular customer(常連客)。customer satisfaction(顧客満足)" },
+  { word:"past",       jp:"過去 / 通り過ぎる / 〜を超えて",         phonetic:"/pɑːst/",         mnemonic:"「パスト」→ in the past(過去に)。drive past(通り過ぎる)。past experiences(過去の経験)" },
+  { word:"same",       jp:"同じ / 同様の",                         phonetic:"/seɪm/",          mnemonic:"「セイム」→ at the same time(同時に)。the same as before(以前と同じ)。same price(同じ価格)" },
+  { word:"early",      jp:"早い / 早く / 初期の",                  phonetic:"/ˈɜːrli/",        mnemonic:"「アーリー」→ early morning(早朝)。early bird(早起き)。an early reply(早めの返信)" },
+  { word:"join",       jp:"参加する / 加わる",                      phonetic:"/dʒɔɪn/",         mnemonic:"「ジョイン」→ join a company(会社に入社する)。join a meeting(会議に参加)。join us for lunch(昼食を一緒に)" },
+  // p.41-50
+  { word:"factory",    jp:"工場",                                  phonetic:"/ˈfæktri/",       mnemonic:"「ファクトリー」→ factory tour(工場見学)。manufacturing factory(製造工場)。factory worker(工場労働者)" },
+  { word:"interested", jp:"興味がある / 関心がある",                phonetic:"/ˈɪntrəstɪd/",   mnemonic:"「インタレスティッド」→ I'm interested in(〜に興味がある)。interest(興味)の形容詞形" },
+  { word:"choose",     jp:"選ぶ / 選択する",                       phonetic:"/tʃuːz/",         mnemonic:"「チューズ」→ choose a career(職業を選ぶ)。choice(選択)。choosing is difficult(選ぶのは難しい)" },
+  { word:"apartment",  jp:"アパート / マンション",                  phonetic:"/əˈpɑːrtmənt/",   mnemonic:"「アパートメント」→ そのままアパートメント。apartment building(集合住宅)。furnished apartment(家具付き)" },
+  { word:"paper",      jp:"紙 / 書類 / 新聞",                      phonetic:"/ˈpeɪpər/",       mnemonic:"「ペーパー」→ paperwork(書類仕事)。on paper(書面上)。a piece of paper(紙一枚)" },
+  { word:"note",       jp:"注意する / メモ / 覚書",                 phonetic:"/nəʊt/",          mnemonic:"「ノート」→ note taking(ノートを取る)。Please note that(ご注意ください)。sticky note(付箋)" },
+  { word:"both",       jp:"両方 / 両方とも",                        phonetic:"/bəʊθ/",          mnemonic:"「ボース」→ both A and B(AもBも両方)。both of them(それら両方)。both sides(両面)" },
+  { word:"either",     jp:"どちらか / どちらも(否定で)",            phonetic:"/ˈaɪðər/",        mnemonic:"「アイザー」→ either A or B(AかBどちらか)。I don't like it either(私もそれが好きではない)" },
+  { word:"neither",    jp:"どちらも〜ない",                         phonetic:"/ˈnaɪðər/",       mnemonic:"「ナイザー」→ neither A nor B(AもBもどちらでもない)。Neither of us(私たちのどちらも)" },
+  { word:"cover",      jp:"覆う / 取り扱う / 表紙",                 phonetic:"/ˈkʌvər/",        mnemonic:"「カバー」→ insurance covers(保険でカバーされる)。cover a topic(話題を取り扱う)。book cover(本の表紙)" },
+  // p.51-60
+  { word:"carry",      jp:"運ぶ / 持ち歩く",                        phonetic:"/ˈkæri/",         mnemonic:"「キャリー」→ carry luggage(荷物を運ぶ)。carry out(実行する)。carry a pen(ペンを持ち歩く)" },
+  { word:"ship",       jp:"発送する / 船",                          phonetic:"/ʃɪp/",           mnemonic:"「シップ」→ ship an order(注文品を発送)。shipping fee(配送料)。ship overseas(海外発送)" },
+  { word:"reach",      jp:"届く / 達する / 連絡する",               phonetic:"/riːtʃ/",         mnemonic:"「リーチ」→ reach a goal(目標を達成)。reach out(連絡する)。reach an agreement(合意に達する)" },
+  { word:"remember",   jp:"覚えている / 思い出す",                  phonetic:"/rɪˈmembər/",     mnemonic:"「リメンバー」→ remember to do(忘れずに〜する)。I remember you(あなたのことを覚えています)" },
+  { word:"field",      jp:"分野 / 野原 / 畑",                       phonetic:"/fiːld/",         mnemonic:"「フィールド」→ field of study(研究分野)。sports field(スポーツグラウンド)。field work(現場作業)" },
+  { word:"dish",       jp:"料理 / 皿",                             phonetic:"/dɪʃ/",           mnemonic:"「ディッシュ」→ local dishes(地元料理)。wash the dishes(皿洗い)。the main dish(メイン料理)" },
+  { word:"post",       jp:"投稿する / 郵便 / ポスト",               phonetic:"/pəʊst/",         mnemonic:"「ポスト」→ post a photo(写真を投稿)。job posting(求人情報)。post office(郵便局)" },
+  { word:"sound",      jp:"音 / 聞こえる / 〜のようだ",             phonetic:"/saʊnd/",         mnemonic:"「サウンド」→ sound great(よさそう！)。sound familiar(聞き覚えがある)。background sound(背景音)" },
+  { word:"break",      jp:"壊れる / 休憩 / 休む",                   phonetic:"/breɪk/",         mnemonic:"「ブレイク」→ take a break(休憩する)。break a record(記録を破る)。coffee break(コーヒーブレイク)" },
+  { word:"seem",       jp:"〜のようだ / 思われる",                  phonetic:"/siːm/",          mnemonic:"「シーム」→ It seems that(〜のようだ)。seem to be(〜らしい)。Things seem fine(状況は問題なさそう)" },
+  // p.61-70
+  { word:"build",      jp:"建てる / 構築する",                      phonetic:"/bɪld/",          mnemonic:"「ビルド」→ build a reputation(評判を築く)。building(建物)。build relationships(関係を築く)" },
+  { word:"necessary",  jp:"必要な / 必須の",                        phonetic:"/ˈnesəseri/",     mnemonic:"「ネセサリー」→ It is necessary to(〜することが必要だ)。necessarily(必ずしも)。necessity(必要性)" },
+  { word:"believe",    jp:"信じる / 思う",                          phonetic:"/bɪˈliːv/",       mnemonic:"「ビリーブ」→ believe in(〜を信じる)。I believe so(そう思います)。believable(信じられる)" },
+  { word:"grow",       jp:"育つ / 増える / 成長する",               phonetic:"/ɡrəʊ/",          mnemonic:"「グロウ」→ grow up(成長する)。grow flowers(花を育てる)。business is growing(事業が成長中)" },
+  { word:"though",     jp:"〜だけれど / でも",                      phonetic:"/ðəʊ/",           mnemonic:"「ゾウ」→ even though(〜にもかかわらず)。though it was hard(難しかったけれど)。as though(まるで〜のように)" },
+  { word:"kind",       jp:"親切な / 種類",                          phonetic:"/kaɪnd/",         mnemonic:"「カインド」→ kind of(ちょっと〜な感じ)。What kind of?(どんな種類の？)。kindly(親切に)" },
+  { word:"miss",       jp:"逃す / 恋しく思う / 欠席する",           phonetic:"/mɪs/",           mnemonic:"「ミス」→ miss the train(電車に乗り遅れる)。miss someone(〜に会いたい)。miss a meeting(会議を欠席)" },
+  { word:"spend",      jp:"使う / 過ごす",                          phonetic:"/spend/",         mnemonic:"「スペンド」→ spend money(お金を使う)。spend time(時間を過ごす)。spending(支出)" },
+  { word:"busy",       jp:"忙しい / 混んでいる",                     phonetic:"/ˈbɪzi/",         mnemonic:"「ビジー」→ busy schedule(忙しいスケジュール)。too busy to(〜するには忙しすぎる)。a busy street(混んでいる通り)" },
+  { word:"save",       jp:"節約する / 救う / 保存する",              phonetic:"/seɪv/",          mnemonic:"「セーブ」→ save money(お金を節約)。save a file(ファイルを保存)。save seats(席を確保する)" },
+  // p.71-80
+  { word:"play",       jp:"演じる / 遊ぶ / 演奏する",               phonetic:"/pleɪ/",          mnemonic:"「プレイ」→ play a role(役割を演じる)。play music(音楽を演奏)。play in the park(公園で遊ぶ)" },
+  { word:"usual",      jp:"いつもの / 通常の",                      phonetic:"/ˈjuːʒuəl/",      mnemonic:"「ユージュアル」→ as usual(いつも通り)。usually(たいてい)。the usual time(いつもの時間)" },
+  { word:"certain",    jp:"確かな / ある〜",                        phonetic:"/ˈsɜːrtn/",       mnemonic:"「サートゥン」→ a certain person(ある人物)。make certain(確かめる)。certainly(確かに)と関連" },
+  { word:"difficult",  jp:"難しい / 困難な",                        phonetic:"/ˈdɪfɪkəlt/",     mnemonic:"「ディフィカルト」→ a difficult task(難しい作業)。difficulty(困難)。have difficulty doing(〜するのに苦労する)" },
+  { word:"store",      jp:"蓄える / 保管する / 店",                 phonetic:"/stɔːr/",         mnemonic:"「ストア」→ store data(データを保管する)。department store(デパート)。storage(保管場所)" },
+  { word:"clear",      jp:"明らかな / 片付ける / 澄んだ",            phonetic:"/klɪər/",         mnemonic:"「クリア」→ make clear(明確にする)。clear the table(テーブルを片付ける)。clear skies(晴れた空)" },
+  { word:"forget",     jp:"忘れる",                                 phonetic:"/fəˈɡet/",        mnemonic:"「フォーゲット」→ Don't forget(忘れないで)。forget to do(〜するのを忘れる)。forgetful(忘れっぽい)" },
+  { word:"rise",       jp:"上がる / 増加 / 昇る",                   phonetic:"/raɪz/",          mnemonic:"「ライズ」→ rise in prices(価格上昇)。rise to the occasion(状況に応じる)。sunrise(日の出)" },
+  { word:"chance",     jp:"機会 / チャンス / 可能性",               phonetic:"/tʃɑːns/",        mnemonic:"「チャンス」→ by chance(偶然に)。a good chance(良い機会)。chance to travel(旅行するチャンス)" },
+  { word:"draw",       jp:"描く / 引く / 引き分け",                 phonetic:"/drɔː/",          mnemonic:"「ドロー」→ draw a picture(絵を描く)。draw attention(注目を集める)。draw interest(関心を引く)" },
+  // p.81-90
+  { word:"proud",      jp:"誇りに思う / 自慢の",                    phonetic:"/praʊd/",         mnemonic:"「プラウド」→ be proud of(〜を誇りに思う)。proud parents(自慢の親)。pride(誇り)の形容詞形" },
+  { word:"pretty",     jp:"かわいい / かなり",                       phonetic:"/ˈprɪti/",        mnemonic:"「プリティ」→ pretty good(かなり良い)。pretty quickly(かなり速く)。pretty design(かわいいデザイン)" },
+  { word:"noise",      jp:"騒音 / 雑音",                            phonetic:"/nɔɪz/",          mnemonic:"「ノイズ」→ make noise(騒ぐ)。background noise(背景の雑音)。noisy(うるさい)の名詞形" },
+  { word:"perhaps",    jp:"たぶん / おそらく",                       phonetic:"/pəˈhæps/",       mnemonic:"「パーハプス」→ perhaps the best(おそらく最高)。Perhaps we could(〜できるかもしれない)" },
+  { word:"farm",       jp:"農場 / 農場を経営する",                   phonetic:"/fɑːrm/",         mnemonic:"「ファーム」→ farm products(農産物)。farm animals(農場の動物)。farming(農業)" },
+  { word:"product",    jp:"製品 / 商品",                            phonetic:"/ˈprɒdʌkt/",      mnemonic:"「プロダクト」→ new product(新製品)。product launch(製品発売)。produce(生産する)の名詞形" },
+  { word:"invite",     jp:"招待する / 招く",                         phonetic:"/ɪnˈvaɪt/",       mnemonic:"「インバイト」→ invite to an event(イベントに招待)。invitation(招待状)。invite someone over(家に招く)" },
+  { word:"offer",      jp:"提供する / 申し出る / 申し出",            phonetic:"/ˈɒfər/",         mnemonic:"「オファー」→ job offer(内定)。offer a discount(割引を提供)。offer help(助けを申し出る)" },
+  { word:"provide",    jp:"提供する / 供給する",                     phonetic:"/prəˈvaɪd/",      mnemonic:"「プロバイド」→ provide services(サービスを提供)。provide A with B(AにBを提供)。provider(プロバイダー)" },
+  { word:"include",    jp:"含む / 含める",                           phonetic:"/ɪnˈkluːd/",      mnemonic:"「インクルード」→ include A in B(BにAを含める)。including tax(税込み)。inclusive(包括的な)" },
+  // p.91-100
+  { word:"report",     jp:"報告する / 報告書",                       phonetic:"/rɪˈpɔːrt/",      mnemonic:"「リポート」→ report a problem(問題を報告)。annual report(年次報告書)。report to work(出勤する)" },
+  { word:"problem",    jp:"問題 / 困難",                            phonetic:"/ˈprɒbləm/",      mnemonic:"「プロブレム」→ solve a problem(問題を解決)。no problem(問題なし)。a problem with(〜に問題がある)" },
+  { word:"likely",     jp:"おそらく / 〜しそうな",                   phonetic:"/ˈlaɪkli/",       mnemonic:"「ライクリー」→ likely to happen(起こりそうな)。most likely(おそらく)。unlikely(ありそうもない)" },
+  { word:"request",    jp:"要求する / 依頼",                         phonetic:"/rɪˈkwest/",      mnemonic:"「リクエスト」→ on request(依頼があれば)。request information(情報を依頼)。customer requests(顧客の要望)" },
+  { word:"cost",       jp:"かかる / 費用 / コスト",                  phonetic:"/kɒst/",          mnemonic:"「コスト」→ The cost is high(費用が高い)。cost cutting(コスト削減)。operating costs(運営費用)" },
+  { word:"complete",   jp:"完成する / 完全な / 記入する",            phonetic:"/kəmˈpliːt/",     mnemonic:"「コンプリート」→ complete a form(フォームに記入)。complete the task(作業を完成させる)。completion(完成)" },
+  { word:"form",       jp:"形 / フォーム / 記入する",                phonetic:"/fɔːrm/",         mnemonic:"「フォーム」→ fill out a form(フォームに記入)。application form(申込書)。in the form of(〜の形で)" },
+  { word:"experience", jp:"経験 / 体験する",                        phonetic:"/ɪkˈspɪəriəns/",  mnemonic:"「エクスペリエンス」→ work experience(職務経験)。experienced(経験豊富な)。a great experience(素晴らしい体験)" },
+  { word:"attend",     jp:"出席する / 参加する",                     phonetic:"/əˈtend/",        mnemonic:"「アテンド」→ attend a meeting(会議に出席)。attendance(出席)。in attendance(出席して)" },
+  { word:"announce",   jp:"発表する / 告知する",                     phonetic:"/əˈnaʊns/",       mnemonic:"「アナウンス」→ announce a decision(決定を発表)。announcement(発表)。make an announcement(告知する)" },
 ];
 
 // ===== USER AUTH (localStorage) =====
@@ -1488,6 +1798,60 @@ function launchConfetti() {
     wrap.appendChild(p);
     setTimeout(() => p.remove(), 4000);
   }
+}
+
+// ===== SEARCH =====
+function showSearch() {
+  show('searchScreen');
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  document.getElementById('searchResults').innerHTML = '<div class="search-hint">英語（例：match）または日本語（例：一致）で検索</div>';
+  setTimeout(() => document.getElementById('searchInput').focus(), 100);
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').style.display = 'none';
+  document.getElementById('searchResults').innerHTML = '<div class="search-hint">英語（例：match）または日本語（例：一致）で検索</div>';
+  document.getElementById('searchInput').focus();
+}
+
+function doSearch(q) {
+  document.getElementById('searchClear').style.display = q ? 'block' : 'none';
+  const wrap = document.getElementById('searchResults');
+  if (!q.trim()) {
+    wrap.innerHTML = '<div class="search-hint">英語（例：match）または日本語（例：一致）で検索</div>';
+    return;
+  }
+  const kw = q.trim().toLowerCase();
+  const hits = VOCAB.filter(v =>
+    v.word.toLowerCase().includes(kw) ||
+    v.jp.includes(q.trim()) ||
+    v.mnemonic.includes(q.trim())
+  );
+  if (hits.length === 0) {
+    wrap.innerHTML = '<div class="no-results">「' + q + '」に一致する単語が見つかりませんでした</div>';
+    return;
+  }
+  wrap.innerHTML = '<div class="search-count">' + hits.length + '件ヒット</div>' +
+    hits.map(v => {
+      const badge = learned.has(v.word) ? '<span style="font-size:0.6rem;background:var(--sage-light);color:var(--sage);padding:2px 8px;border-radius:99px;font-weight:800;border:1px solid #b8dac8;">覚えた</span>' : '';
+      return '<div class="search-result-card" onclick="openFromSearch(\'' + v.word + '\')">' +
+        '<div class="sr-top"><span class="sr-word">' + v.word + '</span><span class="sr-phonetic">' + v.phonetic + '</span>' + badge + '</div>' +
+        '<div class="sr-jp">' + v.jp + '</div>' +
+        '<div class="sr-mnemonic">' + v.mnemonic + '</div>' +
+        '<div class="sr-open-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>単語帳で開く</div>' +
+        '</div>';
+    }).join('');
+}
+
+function openFromSearch(word) {
+  const idx = VOCAB.findIndex(v => v.word === word);
+  if (idx === -1) return;
+  flashList = [...VOCAB];
+  flashIdx = idx;
+  show('flashScreen');
+  renderFlash();
 }
 
 // ===== BOOT =====
