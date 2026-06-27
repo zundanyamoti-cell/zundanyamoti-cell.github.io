@@ -2424,6 +2424,9 @@ function doLogout() {
     localStorage.removeItem('gf_screen_' + _lu);
     localStorage.removeItem('gf_quiz_state_' + _lu);
     localStorage.removeItem('gf_flash_state_' + _lu);
+    localStorage.removeItem('gf_smart_day_' + _lu);
+    localStorage.removeItem('gf_smart_pool_' + _lu);
+    localStorage.removeItem('gf_rot_queue_' + _lu);
   }
   localStorage.removeItem('gf_current_user');
   learned = new Set();
@@ -2580,19 +2583,79 @@ function startFlash(unlearnedOnly) {
   show('flashScreen');
   renderFlash();
 }
+// 日本時間8時基準の「今日」を返す
+function getSmartDay() {
+  const now = new Date();
+  const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+  if (jst.getUTCHours() < 8) jst.setUTCDate(jst.getUTCDate() - 1);
+  return jst.toISOString().slice(0, 10);
+}
+
 function startFlashSmart() {
   const SMART_MAX = 400;
-  const unlearned = VOCAB.filter(v => !learned.has(v.word));
-  const learnedArr = VOCAB.filter(v => learned.has(v.word));
-  let pool;
-  if (unlearned.length >= SMART_MAX) {
-    pool = shuffle(unlearned).slice(0, SMART_MAX);
-  } else {
-    const remaining = SMART_MAX - unlearned.length;
-    const extra = shuffle(learnedArr).slice(0, remaining);
-    pool = shuffle([...unlearned, ...extra]);
+  const u = getCurrentUser();
+  const today = getSmartDay();
+  const dayKey   = 'gf_smart_day_'  + u;
+  const poolKey  = 'gf_smart_pool_' + u;
+  const queueKey = 'gf_rot_queue_'  + u;
+
+  // 今日のプールがすでに保存されていれば再利用（1日同じ内容）
+  if (localStorage.getItem(dayKey) === today) {
+    const saved = JSON.parse(localStorage.getItem(poolKey) || '[]');
+    const wMap = Object.fromEntries(VOCAB.map(v => [v.word, v]));
+    const restored = saved.map(w => wMap[w]).filter(Boolean);
+    if (restored.length > 0) {
+      flashList = restored;
+      flashIdx = 0;
+      show('flashScreen');
+      renderFlash();
+      return;
+    }
   }
+
+  // 未習得を全部取得
+  const unlearnedAll = shuffle(VOCAB.filter(v => !learned.has(v.word)));
+  const learnedSlots = Math.max(0, SMART_MAX - unlearnedAll.length);
+
+  // 習得済みのキュー管理（1単語ずつローテーション）
+  let learnedVocab = [];
+  if (learnedSlots > 0) {
+    let queue = JSON.parse(localStorage.getItem(queueKey) || '[]');
+
+    // 未習得に戻った単語をキューから除外
+    queue = queue.filter(w => learned.has(w));
+
+    // 新たに習得済みになった単語をキュー末尾に追加
+    const queueSet = new Set(queue);
+    VOCAB.forEach(v => {
+      if (learned.has(v.word) && !queueSet.has(v.word)) queue.push(v.word);
+    });
+
+    // キューからlearnedSlots枚取り出す
+    let picks;
+    if (queue.length <= learnedSlots) {
+      // キューが足りない → 全部使い切ってリシャッフルして補填
+      picks = [...queue];
+      const need = learnedSlots - picks.length;
+      const fresh = shuffle(VOCAB.filter(v => learned.has(v.word)).map(v => v.word));
+      picks = picks.concat(fresh.splice(0, need));
+      queue = fresh; // 次回分
+    } else {
+      picks = queue.splice(0, learnedSlots);
+    }
+
+    localStorage.setItem(queueKey, JSON.stringify(queue));
+    const wMap = Object.fromEntries(VOCAB.map(v => [v.word, v]));
+    learnedVocab = picks.map(w => wMap[w]).filter(Boolean);
+  }
+
+  const pool = shuffle([...unlearnedAll, ...learnedVocab]);
   if (pool.length === 0) { alert('単語がありません！'); return; }
+
+  // 今日のプールを保存
+  localStorage.setItem(dayKey, today);
+  localStorage.setItem(poolKey, JSON.stringify(pool.map(v => v.word)));
+
   flashList = pool;
   flashIdx = 0;
   show('flashScreen');
