@@ -762,7 +762,8 @@ body {
 
 /* hidden file input */
 #avatarInput { display: none; }
-button, .flashcard, .mode-btn, .choice-btn, .count-opt, .search-result-card { touch-action: manipulation; }
+button, .mode-btn, .choice-btn, .count-opt, .search-result-card { touch-action: manipulation; }
+.flashcard { touch-action: pan-y; }
 
 /* ===== SEARCH ===== */
 .search-topbar {
@@ -2814,6 +2815,18 @@ function startFlashSmart() {
     if (restored.length > 0) {
       flashList = restored;
       flashIdx = 0;
+      // 前回の続きから再開（保存済みの進行状況が今日のプールと同じ単語集合なら引き継ぐ）
+      const fs = JSON.parse(localStorage.getItem('gf_flash_state_' + u) || 'null');
+      if (fs && fs.words && fs.words.length === restored.length) {
+        const setA = new Set(fs.words);
+        if (setA.size === restored.length && restored.every(v => setA.has(v.word))) {
+          const ordered = fs.words.map(w => wMap[w]).filter(Boolean);
+          if (ordered.length === restored.length) {
+            flashList = ordered;
+            flashIdx = Math.min(Math.max(0, fs.flashIdx || 0), ordered.length - 1);
+          }
+        }
+      }
       show('flashScreen');
       renderFlash();
       return;
@@ -3090,16 +3103,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const card = document.getElementById('flashcard');
   if (card) {
     let sx = 0, sy = 0, swActive = false;
-    card.addEventListener('pointerdown', e => { sx = e.clientX; sy = e.clientY; swActive = true; });
+    card.addEventListener('pointerdown', e => {
+      sx = e.clientX; sy = e.clientY; swActive = true;
+      try { card.setPointerCapture(e.pointerId); } catch (_) {}
+    });
     card.addEventListener('pointerup', e => {
       if (!swActive) return;
       swActive = false;
       const dx = e.clientX - sx, dy = e.clientY - sy;
-      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) {
         flashSwipeMoved = true; // 直後のclick(めくり)を抑制
         if (dx < 0) flashNext(); else flashPrev();
       }
     });
+    card.addEventListener('pointercancel', () => { swActive = false; });
   }
 });
 
@@ -3108,9 +3125,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const u = getCurrentUser();
   if (u) {
     learned = loadLearned();
-    enterApp();
-    // 前回のスクリーン状態を復元
+    // 前回のスクリーン状態を「先に」読む（enterApp内のshow()がgf_screenを上書きするため）
     const lastScreen = localStorage.getItem('gf_screen_' + u);
+    enterApp();
     if (lastScreen === 'quizScreen') {
       const qs = JSON.parse(localStorage.getItem('gf_quiz_state_' + u) || 'null');
       if (qs && qs.words && qs.words.length > 0) {
