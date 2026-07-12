@@ -763,7 +763,8 @@ body {
 /* hidden file input */
 #avatarInput { display: none; }
 button, .mode-btn, .choice-btn, .count-opt, .search-result-card { touch-action: manipulation; }
-.flashcard { touch-action: pan-y; }
+.flashcard, #flashScreen { touch-action: pan-y; }
+.flashcard { will-change: transform; }
 
 /* ===== SEARCH ===== */
 .search-topbar {
@@ -3199,24 +3200,55 @@ document.addEventListener('DOMContentLoaded', () => {
   // アバターエディタ: 背景タップで閉じる
   const ov = document.getElementById('avatarEditorOverlay');
   if (ov) ov.addEventListener('click', e => { if (e.target === ov) closeAvatarEditor(); });
-  // 単語帳: 左右スワイプでカード移動
-  const card = document.getElementById('flashcard');
-  if (card) {
-    let sx = 0, sy = 0, swActive = false;
-    card.addEventListener('pointerdown', e => {
-      sx = e.clientX; sy = e.clientY; swActive = true;
-      try { card.setPointerCapture(e.pointerId); } catch (_) {}
+  // 単語帳: 左右スワイプでカード移動(画面のどこでもOK・カードが指に追従)
+  const flScreen = document.getElementById('flashScreen');
+  const flCard = document.getElementById('flashcard');
+  if (flScreen && flCard) {
+    let sx = 0, sy = 0, t0 = 0, swActive = false, swDragging = false, swFromBtn = false;
+    const resetCard = () => {
+      flCard.style.transition = 'transform 0.18s ease';
+      flCard.style.transform = '';
+    };
+    flScreen.addEventListener('pointerdown', e => {
+      swFromBtn = !!(e.target.closest && e.target.closest('button'));
+      sx = e.clientX; sy = e.clientY; t0 = Date.now();
+      swActive = true; swDragging = false;
+      try { flScreen.setPointerCapture(e.pointerId); } catch (_) {}
     });
-    card.addEventListener('pointerup', e => {
-      if (!swActive) return;
-      swActive = false;
+    flScreen.addEventListener('pointermove', e => {
+      if (!swActive || swFromBtn) return;
       const dx = e.clientX - sx, dy = e.clientY - sy;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) {
-        flashSwipeMoved = true; // 直後のclick(めくり)を抑制
-        if (dx < 0) flashNext(); else flashPrev();
+      // 横方向の動き出しなら方向ロック(以降は上下にブレてもスワイプ継続)
+      if (!swDragging && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy) * 0.8) swDragging = true;
+      if (swDragging) {
+        flCard.style.transition = 'none';
+        flCard.style.transform = 'translateX(' + (dx * 0.85) + 'px) rotate(' + (dx * 0.04) + 'deg)';
+        if (e.cancelable) e.preventDefault();
       }
     });
-    card.addEventListener('pointercancel', () => { swActive = false; });
+    flScreen.addEventListener('pointerup', e => {
+      if (!swActive) return;
+      swActive = false;
+      if (swFromBtn) return;
+      const dx = e.clientX - sx, dt = Date.now() - t0;
+      // 方向ロック済みなら上下のズレは無視して横の移動量だけで判定
+      const flick = swDragging && Math.abs(dx) > 25 && dt < 250;  // 素早いフリック
+      const far   = swDragging && Math.abs(dx) > 50;              // ゆっくりでも距離があればOK
+      resetCard();
+      if (flick || far) {
+        flashSwipeMoved = true;
+        setTimeout(() => { flashSwipeMoved = false; }, 350); // フラグの消し忘れ防止
+        if (dx < 0) flashNext(); else flashPrev();
+      } else if (swDragging) {
+        // 動かしたが途中で戻した → めくり(タップ扱い)にしない
+        flashSwipeMoved = true;
+        setTimeout(() => { flashSwipeMoved = false; }, 350);
+      }
+      swDragging = false;
+    });
+    flScreen.addEventListener('pointercancel', () => {
+      swActive = false; swDragging = false; resetCard();
+    });
   }
 });
 
