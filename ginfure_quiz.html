@@ -3054,15 +3054,45 @@ if ('speechSynthesis' in window) {
   window.speechSynthesis.getVoices();
   window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
 }
+// 端末内で最も自然な英語音声を選ぶ(TOEIC音源に近いネイティブ品質を優先)
+let _bestVoice = null;
+function pickBestEnglishVoice() {
+  if (_bestVoice) return _bestVoice;
+  const voices = window.speechSynthesis.getVoices();
+  const en = voices.filter(v => v.lang && v.lang.toLowerCase().indexOf('en') === 0);
+  if (en.length === 0) return null;
+  const score = v => {
+    let sc = 0;
+    const n = (v.name + ' ' + (v.voiceURI || '')).toLowerCase();
+    if (n.indexOf('premium') !== -1) sc += 50;              // 最高品質
+    if (n.indexOf('enhanced') !== -1 || n.indexOf('拡張') !== -1) sc += 40; // 拡張(高品質)
+    if (n.indexOf('siri') !== -1) sc += 45;
+    if (v.lang === 'en-US') sc += 20;                        // TOEICで最多の米国発音を優先
+    else if (/^en-(gb|au|ca)/.test(v.lang.toLowerCase())) sc += 10;
+    if (/ava|samantha|allison|susan|zoe|nicky|joelle/.test(n)) sc += 8;  // 自然な米声
+    if (/daniel|kate|serena|karen|matilda|tessa|moira/.test(n)) sc += 4; // 英・豪・その他
+    if (v.localService) sc += 3;
+    if (n.indexOf('compact') !== -1) sc -= 20;               // 低品質版は避ける
+    if (/eloquence|fred|albert|bahh|bells|boing|bubbles|cellos|jester|organ|trinoids|whisper|wobble|zarvox|junior|kathy|ralph|superstar|good news|bad news|rocko|shelley|grandma|grandpa|flo|eddy|reed|sandy/.test(n)) sc -= 100; // ロボ声・ネタ声を除外
+    return sc;
+  };
+  en.sort((a, b) => score(b) - score(a));
+  _bestVoice = en[0];
+  return _bestVoice;
+}
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.addEventListener && window.speechSynthesis.addEventListener('voiceschanged', () => { _bestVoice = null; });
+}
+
 function speak(word) {
   if (!('speechSynthesis' in window)) { alert('このブラウザは発音機能に対応していません'); return; }
   window.speechSynthesis.cancel();
   function doSpeak() {
     const u = new SpeechSynthesisUtterance(word);
-    u.lang = 'en-US'; u.rate = 0.85; u.pitch = 1;
-    const voices = window.speechSynthesis.getVoices();
-    const en = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
-    if (en) u.voice = en;
+    const v = pickBestEnglishVoice();
+    if (v) { u.voice = v; u.lang = v.lang; } else { u.lang = 'en-US'; }
+    u.rate = 0.95;  // TOEICに近い自然なペース
+    u.pitch = 1;
     window.speechSynthesis.speak(u);
   }
   const voices = window.speechSynthesis.getVoices();
