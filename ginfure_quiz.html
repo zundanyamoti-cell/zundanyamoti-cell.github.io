@@ -763,7 +763,7 @@ body {
 /* hidden file input */
 #avatarInput { display: none; }
 button, .mode-btn, .choice-btn, .count-opt, .search-result-card { touch-action: manipulation; }
-.flashcard, #flashScreen { touch-action: pan-y; }
+#flashScreen { touch-action: none; overscroll-behavior: none; }
 .flashcard { will-change: transform; }
 
 /* ===== SEARCH ===== */
@@ -3200,6 +3200,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // アバターエディタ: 背景タップで閉じる
   const ov = document.getElementById('avatarEditorOverlay');
   if (ov) ov.addEventListener('click', e => { if (e.target === ov) closeAvatarEditor(); });
+  // 単語帳表示中は上下スクロール・バウンスを完全に止める
+  document.addEventListener('touchmove', e => {
+    const fs = document.getElementById('flashScreen');
+    if (fs && fs.classList.contains('active') && e.cancelable) e.preventDefault();
+  }, { passive: false });
+
   // 単語帳: 左右スワイプでカード移動(画面のどこでもOK・カードが指に追従)
   const flScreen = document.getElementById('flashScreen');
   const flCard = document.getElementById('flashcard');
