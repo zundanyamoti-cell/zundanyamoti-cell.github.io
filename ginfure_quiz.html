@@ -2892,11 +2892,11 @@ function startFlash(unlearnedOnly) {
   show('flashScreen');
   renderFlash();
 }
-// 日本時間8時基準の「今日」を返す
+// 日本時間4時基準の「今日」を返す(朝4時にスマート400がリセット)
 function getSmartDay() {
   const now = new Date();
   const jst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  if (jst.getUTCHours() < 8) jst.setUTCDate(jst.getUTCDate() - 1);
+  if (jst.getUTCHours() < 4) jst.setUTCDate(jst.getUTCDate() - 1);
   return jst.toISOString().slice(0, 10);
 }
 
