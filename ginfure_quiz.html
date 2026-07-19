@@ -2959,8 +2959,12 @@ function startFlashSmart() {
       const pickedSet = new Set(picks);
       // picks済みを除外してから補填（同日内の重複を防ぐ）
       const fresh = shuffle(VOCAB.filter(v => learned.has(v.word) && !pickedSet.has(v.word)).map(v => v.word));
-      picks = picks.concat(fresh.splice(0, need));
-      remaining = fresh; // 次サイクル用
+      const topUp = fresh.splice(0, need);
+      picks = picks.concat(topUp);
+      // 新サイクルの残り = 全習得語 − 今日新サイクル分として出た語
+      // (旧サイクル最終日の語も新サイクルには含める → 全語がサイクルごとに必ず1回出る)
+      const topSet = new Set(topUp);
+      remaining = shuffle(VOCAB.filter(v => learned.has(v.word) && !topSet.has(v.word)).map(v => v.word));
     } else {
       picks = remaining.splice(0, learnedSlots);
     }
