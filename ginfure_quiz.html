@@ -2201,6 +2201,13 @@ function showErr(el, msg) {
 
 function enterApp() {
   learned = loadLearned();
+  // 単語帳に存在しない単語が「覚えた」に残っていたら除去(語彙更新時のズレ防止)
+  {
+    const vocabSet = new Set(VOCAB.map(v => v.word.trim()));
+    const before = learned.size;
+    learned = new Set([...learned].filter(w => vocabSet.has((w || '').trim())));
+    if (learned.size !== before) saveLearned(learned);
+  }
   const username = getCurrentUser();
   const users = getUsers();
   const user = users.find(u => u.username === username);
