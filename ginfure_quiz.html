@@ -2678,12 +2678,6 @@ function renderExample() {
     _exEl.innerHTML = '<span class="ex-en"></span><br>';
     _exEl.querySelector('.ex-en').textContent = _parts[0].trim();
     _exEl.appendChild(document.createTextNode((_parts[1] || '').trim()));
-    const _edit = document.createElement('span');
-    _edit.className = 'ex-edit';
-    _edit.textContent = myex ? '例文を編集(自分の例文)' : '例文を編集';
-    _edit.onclick = function (ev) { ev.stopPropagation(); editExample(); };
-    _exEl.appendChild(document.createElement('br'));
-    _exEl.appendChild(_edit);
     _exEl.style.display = 'block';
   } else {
     _exEl.style.display = 'none';
