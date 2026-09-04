@@ -441,6 +441,8 @@ body {
 }
 .speak-btn:active { transform: scale(0.94); background: #f5e6c4; }
 .speak-icon { width: 13px; height: 13px; fill: var(--amber); }
+.mic-btn.recording { background: var(--wrong); color: #fff; border-color: var(--wrong); animation: micPulse 1s infinite; }
+@keyframes micPulse { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
 
 .choices {
   width: 100%;
@@ -1039,6 +1041,26 @@ button, .mode-btn, .choice-btn, .count-opt, .search-result-card { touch-action: 
       </div>
     </button>
 
+    <button class="mode-btn" style="border-color:#f0c2d4;background:#fff5f9;" onclick="startPron(false)">
+      <div class="btn-icon" style="background:#ffe0ec;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c0507a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+      </div>
+      <div class="btn-text">
+        <span class="btn-title">リスニング & 発音チェック</span>
+        <span class="btn-desc">聞き取り問題＋発音判定（全単語）</span>
+      </div>
+    </button>
+
+    <button class="mode-btn" style="border-color:#f0c2d4;background:#fff5f9;" onclick="startPron(true)">
+      <div class="btn-icon" style="background:#ffe0ec;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c0507a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="btn-text">
+        <span class="btn-title">リスニング & 発音 — 未習得のみ</span>
+        <span class="btn-desc">覚えた済み以外で聞き取り・発音練習</span>
+      </div>
+    </button>
+
     <button class="mode-btn flash-btn" onclick="startFlash(false)">
       <div class="btn-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8a7ab8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -1116,6 +1138,50 @@ button, .mode-btn, .choice-btn, .count-opt, .search-result-card { touch-action: 
   <button class="next-btn" id="nextBtn" onclick="nextQ()">次の問題へ →</button>
 </div>
 
+<!-- LISTENING & PRONUNCIATION -->
+<div class="screen" id="pronScreen">
+  <div class="quiz-topbar">
+    <button class="back-btn" onclick="goHome()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div class="prog-wrap"><div class="prog-bar" id="pronProgBar" style="width:0%"></div></div>
+    <div class="score-chip" id="pronScoreChip">0 / 0</div>
+  </div>
+
+  <div class="word-card" id="pronListenCard">
+    <div class="word-tag" id="pronTag">Q 1 / 20 ・ リスニング</div>
+    <div style="font-size:0.85rem;color:var(--muted);margin:6px 0 18px;">音声を聞いて、正しい意味を選んでください</div>
+    <button class="speak-btn" onclick="replayPronAudio()">
+      <svg class="speak-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+      もう一度聞く
+    </button>
+  </div>
+
+  <div class="word-card" id="pronSpeakCard" style="display:none;">
+    <div class="word-tag" id="pronTag2">Q 1 / 20 ・ 発音チェック</div>
+    <div class="word-english" id="pronWord">match</div>
+    <div class="word-phonetic" id="pronPhonetic">/mætʃ/</div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:4px;">
+      <button class="speak-btn" onclick="replayPronAudio()">
+        <svg class="speak-icon" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        お手本を聞く
+      </button>
+      <button class="speak-btn mic-btn" id="micBtn" onclick="toggleRecording()">🎤 発音する</button>
+    </div>
+    <div id="pronTranscript" style="margin-top:14px;font-size:0.82rem;color:var(--muted);min-height:18px;"></div>
+  </div>
+
+  <div class="choices" id="pronChoices"></div>
+
+  <div class="feedback-card" id="pronFeedCard">
+    <div class="feedback-label" id="pronFeedLabel"></div>
+    <div class="mnemonic-tag">語呂合わせ</div>
+    <div class="mnemonic-body" id="pronFeedMnemonic"></div>
+  </div>
+
+  <button class="next-btn" id="pronNextBtn" onclick="nextPron()">次の問題へ →</button>
+</div>
+
 <!-- FLASHCARD -->
 <div class="screen" id="flashScreen">
   <div class="flash-topbar">
@@ -1182,7 +1248,7 @@ button, .mode-btn, .choice-btn, .count-opt, .search-result-card { touch-action: 
       <div class="result-pct" id="rPct">—</div>
       <div class="result-msg" id="rMsg"></div>
       <div class="result-actions">
-        <button class="btn-retry" onclick="retryQuiz()">もう一度チャレンジ</button>
+        <button class="btn-retry" onclick="retryLast()">もう一度チャレンジ</button>
         <button class="btn-home" onclick="goHome()">ホームに戻る</button>
       </div>
     </div>
@@ -2138,6 +2204,10 @@ function saveLearned(set) {
 let quizList = [], curQ = 0, score = 0, numQ = 20, answered = false;
 let flashList = [], flashIdx = 0, flashFlipped = false;
 let learned = new Set();
+let pronList = [], pronIdx = 0, pronScore = 0, pronAnswered = false, pronTypes = [];
+let lastPronUnlearned = false;
+let lastResultType = 'quiz';
+let recognition = null, recognizing = false;
 
 // ===== AUTH UI =====
 function showLogin() {
@@ -2464,7 +2534,10 @@ function nextQ() {
 function speakCurrent() { speak(document.getElementById('qWord').textContent); }
 
 // ===== RESULT =====
+function retryLast() { if (lastResultType === 'pron') retryPron(); else retryQuiz(); }
+
 function showResult() {
+  lastResultType = 'quiz';
   const u = getCurrentUser();
   const pct = Math.round(score / quizList.length * 100);
   saveBestScore(u, numQ, pct);
@@ -2483,6 +2556,187 @@ function showResult() {
   pctEl.className = 'result-pct ' + cls;
   document.getElementById('rMsg').textContent = msg;
   show('resultScreen');
+}
+
+// ===== LISTENING & PRONUNCIATION =====
+// 音声認識(Web Speech API)はブラウザ内蔵の無料機能。有料APIは使用しない。
+const SR_SUPPORTED = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+
+function retryPron() { startPron(lastPronUnlearned); }
+
+function startPron(unlearnedOnly) {
+  lastPronUnlearned = unlearnedOnly;
+  let pool = unlearnedOnly ? VOCAB.filter(v => !learned.has(v.word)) : VOCAB;
+  if (pool.length === 0) { alert('未習得の単語がありません！'); return; }
+  if (pool.length < 4) { alert('未習得の単語が少なすぎます（最低4語必要）。'); return; }
+  pronList = shuffle(pool).slice(0, Math.min(numQ, pool.length));
+  // 音声認識に対応していない端末ではリスニング問題のみ出題する
+  pronTypes = pronList.map(() => (SR_SUPPORTED && Math.random() < 0.5) ? 'speak' : 'listen');
+  pronIdx = 0; pronScore = 0; pronAnswered = false;
+  show('pronScreen');
+  renderPron();
+}
+
+function renderPron() {
+  const q = pronList[pronIdx];
+  const type = pronTypes[pronIdx];
+  pronAnswered = false;
+  stopRecordingUI();
+  document.getElementById('pronFeedCard').classList.remove('visible');
+  document.getElementById('pronNextBtn').style.display = 'none';
+  document.getElementById('pronProgBar').style.width = (pronIdx / pronList.length * 100) + '%';
+  document.getElementById('pronScoreChip').textContent = pronScore + ' / ' + pronIdx;
+  document.getElementById('pronTranscript').textContent = '';
+
+  const listenCard = document.getElementById('pronListenCard');
+  const speakCard = document.getElementById('pronSpeakCard');
+  const choicesEl = document.getElementById('pronChoices');
+
+  if (type === 'listen') {
+    listenCard.style.display = 'block';
+    speakCard.style.display = 'none';
+    choicesEl.style.display = 'flex';
+    document.getElementById('pronTag').textContent = 'Q ' + (pronIdx+1) + ' / ' + pronList.length + ' ・ リスニング';
+    const wrong = shuffle(VOCAB.filter(v => v.word !== q.word)).slice(0, 3);
+    const opts = shuffle([q, ...wrong]);
+    choicesEl.innerHTML = '';
+    opts.forEach(o => {
+      const b = document.createElement('button');
+      b.className = 'choice-btn';
+      b.textContent = o.jp;
+      b.onclick = () => judgeChoice(b, o.word === q.word, q);
+      choicesEl.appendChild(b);
+    });
+    setTimeout(() => speak(q.word), 400);
+  } else {
+    listenCard.style.display = 'none';
+    speakCard.style.display = 'block';
+    choicesEl.style.display = 'none';
+    choicesEl.innerHTML = '';
+    document.getElementById('pronTag2').textContent = 'Q ' + (pronIdx+1) + ' / ' + pronList.length + ' ・ 発音チェック';
+    document.getElementById('pronWord').textContent = q.word;
+    document.getElementById('pronPhonetic').textContent = q.phonetic;
+  }
+}
+
+function replayPronAudio() { speak(pronList[pronIdx].word); }
+
+function judgeChoice(btn, correct, q) {
+  if (pronAnswered) return;
+  pronAnswered = true;
+  if (correct) {
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('#pronChoices .choice-btn').forEach(b => { if (b.textContent === q.jp) b.classList.add('correct'); });
+  }
+  document.querySelectorAll('#pronChoices .choice-btn').forEach(b => b.disabled = true);
+  setPronFeedback(correct, q);
+}
+
+function setPronFeedback(correct, q, heard) {
+  if (correct) pronScore++;
+  const label = document.getElementById('pronFeedLabel');
+  label.className = 'feedback-label ' + (correct ? 'ok' : 'ng');
+  if (heard !== undefined) {
+    label.textContent = correct
+      ? '発音OK！（聞き取り結果: ' + heard + '）'
+      : '発音を確認できませんでした（聞き取り結果: ' + (heard || '—') + '） 正解: ' + q.word;
+  } else {
+    label.textContent = correct ? '正解！' : '不正解... 正解：' + q.jp;
+  }
+  document.getElementById('pronFeedMnemonic').textContent = q.mnemonic;
+  document.getElementById('pronFeedCard').classList.add('visible');
+  document.getElementById('pronNextBtn').style.display = 'block';
+  document.getElementById('pronScoreChip').textContent = pronScore + ' / ' + (pronIdx+1);
+}
+
+function nextPron() {
+  if (recognizing && recognition) recognition.stop();
+  pronIdx++;
+  if (pronIdx >= pronList.length) showPronResult();
+  else renderPron();
+}
+
+function showPronResult() {
+  lastResultType = 'pron';
+  const pct = Math.round(pronScore / pronList.length * 100);
+  document.getElementById('rScore').textContent = pronScore;
+  document.getElementById('rDenom').textContent = '/ ' + pronList.length + '問正解';
+  let grade, msg, cls;
+  if (pct >= 90) { grade='S'; msg='完璧！リスニングも発音もバッチリ！'; cls='s'; launchConfetti(); }
+  else if (pct >= 70) { grade='A'; msg='いい調子！あと少し！'; cls='a'; }
+  else if (pct >= 50) { grade='B'; msg='半分クリア！お手本をよく聞いて練習しよう'; cls='b'; }
+  else              { grade='C'; msg='発音のお手本をよく聞いて練習しよう！'; cls='c'; }
+  const pctEl = document.getElementById('rPct');
+  pctEl.textContent = grade + ' ランク — ' + pct + '%';
+  pctEl.className = 'result-pct ' + cls;
+  document.getElementById('rMsg').textContent = msg;
+  show('resultScreen');
+}
+
+// ---- 発音判定(ブラウザ内蔵のWeb Speech APIのみ使用。有料API不使用) ----
+function normalizeWord(s) { return (s || '').toLowerCase().replace(/[^a-z ]/g, '').trim(); }
+
+function levenshtein(a, b) {
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1] : 1 + Math.min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+
+function pronMatches(said, target) {
+  const s = normalizeWord(said), t = normalizeWord(target);
+  if (!s || !t) return false;
+  if (s === t) return true;
+  const dist = levenshtein(s, t);
+  return dist <= Math.max(1, Math.floor(t.length * 0.25));
+}
+
+function stopRecordingUI() {
+  recognizing = false;
+  const micBtn = document.getElementById('micBtn');
+  if (micBtn) { micBtn.classList.remove('recording'); micBtn.innerHTML = '🎤 発音する'; }
+}
+
+function startRecording() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { alert('お使いのブラウザは音声認識に対応していません。'); return; }
+  if (recognizing) return;
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 3;
+  recognizing = true;
+  const micBtn = document.getElementById('micBtn');
+  micBtn.classList.add('recording');
+  micBtn.textContent = '🎙️ 聞き取り中…';
+  document.getElementById('pronTranscript').textContent = '';
+  recognition.onresult = (e) => {
+    const alts = Array.from(e.results[0]).map(r => r.transcript);
+    const q = pronList[pronIdx];
+    const matched = alts.some(a => pronMatches(a, q.word));
+    document.getElementById('pronTranscript').textContent = '聞き取り結果: ' + alts[0];
+    if (!pronAnswered) setPronFeedback(matched, q, alts[0]);
+  };
+  recognition.onerror = (e) => {
+    if (e.error === 'no-speech') document.getElementById('pronTranscript').textContent = '音声が検出されませんでした。もう一度お試しください。';
+    else if (e.error === 'not-allowed' || e.error === 'service-not-allowed') alert('マイクの使用が許可されていません。設定を確認してください。');
+    else document.getElementById('pronTranscript').textContent = '認識エラー: ' + e.error;
+  };
+  recognition.onend = () => { stopRecordingUI(); };
+  recognition.start();
+}
+
+function toggleRecording() {
+  if (recognizing) { if (recognition) recognition.stop(); return; }
+  startRecording();
 }
 
 // ===== FLASHCARD =====
@@ -2876,6 +3130,15 @@ document.addEventListener('keydown', e => {
     } else if (answered && (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight')) {
       e.preventDefault();
       nextQ();
+    }
+  } else if (id === 'pronScreen') {
+    if (pronTypes[pronIdx] === 'listen' && !pronAnswered && ['1','2','3','4'].indexOf(e.key) !== -1) {
+      const btns = document.querySelectorAll('#pronChoices .choice-btn');
+      const b = btns[parseInt(e.key) - 1];
+      if (b) b.click();
+    } else if (pronAnswered && (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight')) {
+      e.preventDefault();
+      nextPron();
     }
   } else if (id === 'flashScreen') {
     if (e.key === ' ' || e.key === 'Enter' || e.key === 'ArrowUp') { e.preventDefault(); flipCard(); }
